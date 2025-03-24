@@ -1,6 +1,13 @@
 const express = require("express");
 const cors = require("cors");
-const booksRouter = require("./app/routes/book.route");
+
+// Import các router cho các bảng
+const bookRouter = require("./app/routes/book.route");
+const theoDoiMuonSachRouter = require("./app/routes/theoDoiMuonSach.route");
+const nhanVienRouter = require("./app/routes/nhanVien.route");
+const nhaXuatBanRouter = require("./app/routes/nhaXuatBan.route");
+const docGiaRouter = require("./app/routes/docGia.route");
+
 const ApiError = require("./app/api-error");
 
 const app = express();
@@ -8,11 +15,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Route chính
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to Book Borrowing Management application." });
+  res.json({ message: "Welcome to book borrow management system." });
 });
 
-app.use("/api/books", booksRouter);
+// Các route cho từng bảng
+app.use("/api/books", bookRouter);
+app.use("/api/theoDoiMuonSach", theoDoiMuonSachRouter);
+app.use("/api/nhanVien", nhanVienRouter);
+app.use("/api/nhaXuatBan", nhaXuatBanRouter);
+app.use("/api/docGia", docGiaRouter);
 
 // handle 404 response
 app.use((req, res, next) => {
