@@ -6,15 +6,24 @@ const router = express.Router();
 // Route để lấy tất cả nhân viên, tạo mới hoặc xóa tất cả
 router
   .route("/")
-  .get(nhanVien.findAll) // Lấy tất cả nhân viên
-  .post(nhanVien.create) // Tạo mới nhân viên
-  .delete(nhanVien.deleteAll); // Xóa tất cả nhân viên
+  .get(nhanVien.findAll)
+  .post(nhanVien.create)
+  .delete(nhanVien.deleteAll);
 
 // Route để thao tác với nhân viên theo ID
 router
   .route("/:id")
-  .get(nhanVien.findOne) // Lấy nhân viên theo ID
-  .put(nhanVien.update) // Cập nhật nhân viên theo ID
-  .delete(nhanVien.delete); // Xóa nhân viên theo ID
+  .get(nhanVien.findOne)
+  .put(nhanVien.update)
+  .delete(nhanVien.delete);
+
+// Route: Lấy danh sách sách mà nhân viên đang theo dõi
+router.get("/borrowed/:MSNV", nhanVien.getBooksByEmployee);
+
+// Route: Nhân viên mượn sách (thêm mượn sách mới)
+router.post("/borrow/:MSNV", nhanVien.addBorrowedBook);
+
+// Route: Trả sách
+router.put("/return/:MaSach", nhanVien.returnBook);
 
 module.exports = router;

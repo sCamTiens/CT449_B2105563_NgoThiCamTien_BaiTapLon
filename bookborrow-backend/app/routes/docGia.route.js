@@ -17,4 +17,13 @@ router
   .put(docGia.update) // Cập nhật độc giả theo ID
   .delete(docGia.delete); // Xóa độc giả theo ID
 
+// Tìm độc giả theo tên
+router.get("/search", docGia.findByName);
+
+// Lấy danh sách sách đã mượn của độc giả
+router.get("/borrowed/:MaDocGia", docGia.getBorrowedBooks);
+
+// Kiểm tra độc giả đã mượn sách hay chưa
+router.get("/check-borrowed/:MaDocGia", docGia.checkBorrowedBooks);
+
 module.exports = router;

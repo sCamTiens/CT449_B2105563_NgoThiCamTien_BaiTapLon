@@ -3,6 +3,7 @@ const { ObjectId } = require("mongodb");
 class NhaXuatBanService {
   constructor(client) {
     this.NhaXuatBan = client.db().collection("NhaXuatBan");
+    this.Sach = client.db().collection("Sach"); // Liên kết với bảng Sách
   }
 
   // Định nghĩa phương thức xử lý dữ liệu nhà xuất bản (extract)
@@ -77,6 +78,18 @@ class NhaXuatBanService {
   async deleteAll() {
     const result = await this.NhaXuatBan.deleteMany({});
     return result.deletedCount;
+  }
+
+  // Lấy thông tin sách theo mã nhà xuất bản
+  async getBooksByPublisher(MaNXB) {
+    const books = await this.Sach.find({ MaNXB }).toArray();
+    return books;
+  }
+
+  // Lấy thông tin nhà xuất bản từ mã nhà xuất bản (MaNXB)
+  async getPublisherInfo(MaNXB) {
+    const publisher = await this.NhaXuatBan.findOne({ MaNXB });
+    return publisher;
   }
 }
 

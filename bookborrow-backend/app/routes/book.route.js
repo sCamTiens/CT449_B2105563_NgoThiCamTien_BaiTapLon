@@ -17,4 +17,13 @@ router
   .put(books.update) // Cập nhật sách theo ID
   .delete(books.delete); // Xóa sách theo ID
 
+// Tìm sách theo tên
+router.get("/search", books.findByName);
+
+// Tìm sách theo mã nhà xuất bản
+router.get("/publisher/:MaNXB", books.findByPublisher);
+
+// Lấy thông tin nhà xuất bản
+router.get("/publisher-info/:MaNXB", books.getPublisherInfo);
+
 module.exports = router;

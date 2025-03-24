@@ -3,18 +3,29 @@ const theoDoiMuonSach = require("../controllers/theoDoiMuonSach.controller");
 
 const router = express.Router();
 
-// Route để lấy tất cả theo dõi mượn sách, tạo mới hoặc xóa tất cả
+// CRUD chính
 router
   .route("/")
-  .get(theoDoiMuonSach.findAll) // Lấy tất cả bản ghi theo dõi mượn sách
-  .post(theoDoiMuonSach.create) // Tạo mới bản ghi theo dõi mượn sách
-  .delete(theoDoiMuonSach.deleteAll); // Xóa tất cả bản ghi theo dõi mượn sách
+  .get(theoDoiMuonSach.findAll)
+  .post(theoDoiMuonSach.create)
+  .delete(theoDoiMuonSach.deleteAll);
 
-// Route để thao tác với bản ghi theo dõi mượn sách theo ID
 router
   .route("/:id")
-  .get(theoDoiMuonSach.findOne) // Lấy bản ghi theo ID
-  .put(theoDoiMuonSach.update) // Cập nhật bản ghi theo ID
-  .delete(theoDoiMuonSach.delete); // Xóa bản ghi theo ID
+  .get(theoDoiMuonSach.findOne)
+  .put(theoDoiMuonSach.update)
+  .delete(theoDoiMuonSach.delete);
+
+// Lấy sách mà độc giả đã mượn
+router.get("/reader/:MaDocGia", theoDoiMuonSach.getBooksBorrowedByReader);
+
+// Lấy sách mà nhân viên đã theo dõi mượn
+router.get("/employee/:MSNV", theoDoiMuonSach.getBooksBorrowedByEmployee);
+
+// Lấy chi tiết sách từ MaSach
+router.get("/book-detail/:MaSach", theoDoiMuonSach.getBookDetails);
+
+// Kiểm tra sách đã trả hay chưa
+router.get("/check-return/:MaSach", theoDoiMuonSach.checkReturnStatus);
 
 module.exports = router;

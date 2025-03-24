@@ -2,6 +2,7 @@ const NhanVienService = require("../services/nhanVien.service");
 const MongoDB = require("../utils/mongodb.util");
 const ApiError = require("../api-error");
 
+// Tạo nhân viên
 exports.create = async (req, res, next) => {
   if (!req.body?.MSNV) {
     return next(new ApiError(400, "MSNV can not be empty"));
@@ -17,6 +18,7 @@ exports.create = async (req, res, next) => {
   }
 };
 
+// Lấy tất cả hoặc tìm theo tên
 exports.findAll = async (req, res, next) => {
   let documents = [];
   try {
@@ -35,6 +37,7 @@ exports.findAll = async (req, res, next) => {
   }
 };
 
+// Lấy nhân viên theo ID
 exports.findOne = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -54,6 +57,7 @@ exports.findOne = async (req, res, next) => {
   }
 };
 
+// Cập nhật nhân viên
 exports.update = async (req, res, next) => {
   const { id } = req.params;
   const payload = req.body;
@@ -77,6 +81,7 @@ exports.update = async (req, res, next) => {
   }
 };
 
+// Xóa nhân viên
 exports.delete = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -96,6 +101,7 @@ exports.delete = async (req, res, next) => {
   }
 };
 
+// Xóa tất cả nhân viên
 exports.deleteAll = async (req, res, next) => {
   try {
     const nhanVienService = new NhanVienService(MongoDB.client);
@@ -107,5 +113,61 @@ exports.deleteAll = async (req, res, next) => {
     return next(
       new ApiError(500, "An error occurred while removing all nhan vien")
     );
+  }
+};
+
+// Lấy danh sách sách mà nhân viên đang theo dõi
+exports.getBooksByEmployee = async (req, res, next) => {
+  try {
+    const { MSNV } = req.params;
+    const nhanVienService = new NhanVienService(MongoDB.client);
+    const books = await nhanVienService.getBooksByEmployee(MSNV);
+    res.json(books);
+  } catch (error) {
+    return next(
+      new ApiError(500, "Error retrieving books managed by the employee")
+    );
+  }
+};
+
+// Nhân viên mượn sách (thêm mới vào TheoDoiMuonSach)
+exports.addBorrowedBook = async (req, res, next) => {
+  try {
+    const { MSNV } = req.params;
+    const { MaSach, NgayMuon } = req.body;
+
+    if (!MaSach || !NgayMuon) {
+      return next(new ApiError(400, "MaSach and NgayMuon are required"));
+    }
+
+    const nhanVienService = new NhanVienService(MongoDB.client);
+    const result = await nhanVienService.addBorrowedBook(
+      MSNV,
+      MaSach,
+      new Date(NgayMuon)
+    );
+    res.json(result);
+  } catch (error) {
+    return next(
+      new ApiError(500, "Error adding borrowed book for the employee")
+    );
+  }
+};
+
+// Trả sách (update NgayTra)
+exports.returnBook = async (req, res, next) => {
+  try {
+    const { MaSach } = req.params;
+
+    const nhanVienService = new NhanVienService(MongoDB.client);
+    const result = await nhanVienService.returnBook(MaSach);
+
+    if (result.modifiedCount === 0) {
+      return next(new ApiError(404, "No matching unreturned book found"));
+    }
+
+    res.json({ message: "Book returned successfully", result });
+  } catch (error) {
+    return next(new ApiError(500, "Error returning the book"));
   }
 };

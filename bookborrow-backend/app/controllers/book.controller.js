@@ -2,6 +2,7 @@ const BookService = require("../services/book.service");
 const MongoDB = require("../utils/mongodb.util");
 const ApiError = require("../api-error");
 
+// Tạo mới sách
 exports.create = async (req, res, next) => {
   if (!req.body?.MaSach) {
     return next(new ApiError(400, "MaSach can not be empty"));
@@ -15,6 +16,7 @@ exports.create = async (req, res, next) => {
   }
 };
 
+// Lấy tất cả sách hoặc tìm theo tên sách nếu có query TenSach
 exports.findAll = async (req, res, next) => {
   let documents = [];
   try {
@@ -31,6 +33,7 @@ exports.findAll = async (req, res, next) => {
   }
 };
 
+// Tìm sách theo ID
 exports.findOne = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -50,6 +53,7 @@ exports.findOne = async (req, res, next) => {
   }
 };
 
+// Cập nhật thông tin sách
 exports.update = async (req, res, next) => {
   const { id } = req.params;
   const payload = req.body;
@@ -73,12 +77,10 @@ exports.update = async (req, res, next) => {
   }
 };
 
+// Xóa sách theo ID
 exports.delete = async (req, res, next) => {
   const { id } = req.params;
   try {
-    if (!id) {
-      return next(new ApiError(400, "Id can not valid"));
-    }
     const bookService = new BookService(MongoDB.client);
     const document = await bookService.delete(id);
     if (!document) {
@@ -92,6 +94,7 @@ exports.delete = async (req, res, next) => {
   }
 };
 
+// Xóa tất cả sách
 exports.deleteAll = async (req, res, next) => {
   try {
     const bookService = new BookService(MongoDB.client);
@@ -103,5 +106,44 @@ exports.deleteAll = async (req, res, next) => {
     return next(
       new ApiError(500, "An error occurred while removing all books")
     );
+  }
+};
+
+// Tìm sách theo tên (dành cho route /search?name=...)
+exports.findByName = async (req, res, next) => {
+  try {
+    const { name } = req.query;
+    const bookService = new BookService(MongoDB.client);
+    const documents = await bookService.findByName(name);
+    res.json(documents);
+  } catch (error) {
+    return next(new ApiError(500, "Error finding book by name"));
+  }
+};
+
+// Tìm sách theo mã nhà xuất bản
+exports.findByPublisher = async (req, res, next) => {
+  try {
+    const { MaNXB } = req.params;
+    const bookService = new BookService(MongoDB.client);
+    const books = await bookService.findByPublisher(MaNXB);
+    res.json(books);
+  } catch (error) {
+    return next(new ApiError(500, "Error finding books by publisher"));
+  }
+};
+
+// Lấy thông tin nhà xuất bản từ MaNXB
+exports.getPublisherInfo = async (req, res, next) => {
+  try {
+    const { MaNXB } = req.params;
+    const bookService = new BookService(MongoDB.client);
+    const publisher = await bookService.getPublisherInfo(MaNXB);
+    if (!publisher) {
+      return next(new ApiError(404, "Publisher not found"));
+    }
+    res.json(publisher);
+  } catch (error) {
+    return next(new ApiError(500, "Error retrieving publisher info"));
   }
 };

@@ -3,6 +3,7 @@ const { ObjectId } = require("mongodb");
 class BookService {
   constructor(client) {
     this.Sach = client.db().collection("Sach");
+    this.NhaXuatBan = client.db().collection("NhaXuatBan");
   }
 
   // Định nghĩa phương thức xử lý dữ liệu sách (extract)
@@ -13,9 +14,10 @@ class BookService {
       DonGia: payload.DonGia,
       SoQuyen: payload.SoQuyen,
       NamXuatBan: payload.NamXuatBan,
-      MaNXB: payload.MaNXB,
+      MaNXB: payload.MaNXB, // Mã nhà xuất bản
       NguonGoc: payload.NguonGoc,
     };
+
     // Xóa các trường không có dữ liệu
     Object.keys(sach).forEach((key) => !sach[key] && delete sach[key]);
     return sach;
@@ -79,6 +81,17 @@ class BookService {
   async deleteAll() {
     const result = await this.Sach.deleteMany({});
     return result.deletedCount;
+  }
+
+  // Tìm sách theo mã nhà xuất bản (MaNXB)
+  async findByPublisher(MaNXB) {
+    return await this.find({ MaNXB });
+  }
+
+  // Lấy thông tin Nhà Xuất Bản theo MaNXB
+  async getPublisherInfo(MaNXB) {
+    const publisher = await this.NhaXuatBan.findOne({ MaNXB });
+    return publisher;
   }
 }
 

@@ -3,17 +3,18 @@ const { ObjectId } = require("mongodb");
 class NhanVienService {
   constructor(client) {
     this.NhanVien = client.db().collection("NhanVien");
+    this.TheoDoiMuonSach = client.db().collection("TheoDoiMuonSach");
   }
 
   // Định nghĩa phương thức xử lý dữ liệu nhân viên (extract)
   extractNhanVienData(payload) {
     const nhanVien = {
-      MSNV: payload.MSNV,
-      HoTenNV: payload.HoTenNV,
-      Password: payload.Password,
-      ChucVu: payload.ChucVu,
-      DiaChi: payload.DiaChi,
-      SoDienThoai: payload.SoDienThoai,
+      MSNV: payload.MSNV, // Mã nhân viên
+      HoTenNV: payload.HoTenNV, // Họ và tên nhân viên
+      Password: payload.Password, // Mật khẩu nhân viên
+      ChucVu: payload.ChucVu, // Chức vụ nhân viên
+      DiaChi: payload.DiaChi, // Địa chỉ nhân viên
+      SoDienThoai: payload.SoDienThoai, // Số điện thoại nhân viên
     };
     // Xóa các trường không có dữ liệu
     Object.keys(nhanVien).forEach(
@@ -42,15 +43,15 @@ class NhanVienService {
   // Tìm nhân viên theo mã nhân viên (MSNV)
   async findById(id) {
     const result = await this.find({
-      _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+      MSNV: id, // Sử dụng MSNV để tìm nhân viên
     });
     return result;
   }
 
-  // Cập nhật thông tin nhân viên theo ID
+  // Cập nhật thông tin nhân viên theo MSNV
   async update(id, payload) {
     const filter = {
-      _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+      MSNV: id, // Sử dụng MSNV để tìm nhân viên
     };
     const update = this.extractNhanVienData(payload);
     const result = await this.NhanVien.findOneAndUpdate(
@@ -61,10 +62,10 @@ class NhanVienService {
     return result;
   }
 
-  // Xóa nhân viên theo ID
+  // Xóa nhân viên theo MSNV
   async delete(id) {
     const result = await this.NhanVien.findOneAndDelete({
-      _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+      MSNV: id, // Sử dụng MSNV để xóa nhân viên
     });
     return result;
   }
@@ -73,6 +74,32 @@ class NhanVienService {
   async deleteAll() {
     const result = await this.NhanVien.deleteMany({});
     return result.deletedCount;
+  }
+
+  // Lấy danh sách sách mà nhân viên đã quản lý (theo dõi mượn sách)
+  async getBooksByEmployee(MSNV) {
+    const books = await this.TheoDoiMuonSach.find({ MSNV }).toArray();
+    return books;
+  }
+
+  // Thêm thông tin mượn sách cho nhân viên (theo dõi việc mượn sách)
+  async addBorrowedBook(MSNV, MaSach, NgayMuon) {
+    const result = await this.TheoDoiMuonSach.insertOne({
+      MSNV,
+      MaSach,
+      NgayMuon,
+      NgayTra: null, // Ngày trả sách sẽ được cập nhật khi sách được trả
+    });
+    return result;
+  }
+
+  // Cập nhật thông tin trả sách
+  async returnBook(MaSach) {
+    const result = await this.TheoDoiMuonSach.updateOne(
+      { MaSach, NgayTra: null }, // Tìm sách chưa trả
+      { $set: { NgayTra: new Date() } }
+    );
+    return result;
   }
 }
 

@@ -2,6 +2,7 @@ const NhaXuatBanService = require("../services/nhaXuatBan.service");
 const MongoDB = require("../utils/mongodb.util");
 const ApiError = require("../api-error");
 
+// Thêm nhà xuất bản
 exports.create = async (req, res, next) => {
   if (!req.body?.MaNXB) {
     return next(new ApiError(400, "MaNXB can not be empty"));
@@ -17,6 +18,7 @@ exports.create = async (req, res, next) => {
   }
 };
 
+// Lấy tất cả sách hoặc tìm theo tên
 exports.findAll = async (req, res, next) => {
   let documents = [];
   try {
@@ -35,6 +37,7 @@ exports.findAll = async (req, res, next) => {
   }
 };
 
+// Lấy nahf xuất bản theo ID
 exports.findOne = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -57,6 +60,7 @@ exports.findOne = async (req, res, next) => {
   }
 };
 
+// Cập nhật nhà xuất bản
 exports.update = async (req, res, next) => {
   const { id } = req.params;
   const payload = req.body;
@@ -80,6 +84,7 @@ exports.update = async (req, res, next) => {
   }
 };
 
+// Xóa nhà xuất bản
 exports.delete = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -102,6 +107,7 @@ exports.delete = async (req, res, next) => {
   }
 };
 
+// Xóa tất cả nhà xuất bản
 exports.deleteAll = async (req, res, next) => {
   try {
     const nhaXuatBanService = new NhaXuatBanService(MongoDB.client);
@@ -112,6 +118,43 @@ exports.deleteAll = async (req, res, next) => {
   } catch (error) {
     return next(
       new ApiError(500, "An error occurred while removing all nha xuat ban")
+    );
+  }
+};
+
+// Lấy danh sách sách theo MaNXB
+exports.getBooksByPublisher = async (req, res, next) => {
+  try {
+    const { MaNXB } = req.params;
+    const nhaXuatBanService = new NhaXuatBanService(MongoDB.client);
+    const books = await nhaXuatBanService.getBooksByPublisher(MaNXB);
+    res.json(books);
+  } catch (error) {
+    return next(
+      new ApiError(
+        500,
+        `Error retrieving books for publisher MaNXB=${req.params.MaNXB}`
+      )
+    );
+  }
+};
+
+// Lấy thông tin nhà xuất bản từ MaNXB
+exports.getPublisherInfo = async (req, res, next) => {
+  try {
+    const { MaNXB } = req.params;
+    const nhaXuatBanService = new NhaXuatBanService(MongoDB.client);
+    const publisher = await nhaXuatBanService.getPublisherInfo(MaNXB);
+    if (!publisher) {
+      return next(new ApiError(404, "Publisher not found"));
+    }
+    res.json(publisher);
+  } catch (error) {
+    return next(
+      new ApiError(
+        500,
+        `Error retrieving publisher info for MaNXB=${req.params.MaNXB}`
+      )
     );
   }
 };

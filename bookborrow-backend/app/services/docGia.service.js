@@ -3,6 +3,7 @@ const { ObjectId } = require("mongodb");
 class DocgiaService {
   constructor(client) {
     this.Docgia = client.db().collection("Docgia");
+    this.TheoDoiMuonSach = client.db().collection("TheoDoiMuonSach");
   }
 
   // Định nghĩa phương thức xử lý dữ liệu độc giả (extract)
@@ -79,6 +80,20 @@ class DocgiaService {
   async deleteAll() {
     const result = await this.Docgia.deleteMany({});
     return result.deletedCount;
+  }
+
+  // Lấy thông tin mượn sách của độc giả
+  async getBorrowedBooks(MaDocGia) {
+    const borrowedBooks = await this.TheoDoiMuonSach.find({
+      MaDocGia,
+    }).toArray();
+    return borrowedBooks;
+  }
+
+  // Kiểm tra xem độc giả đã mượn sách hay chưa
+  async checkBorrowedBooks(MaDocGia) {
+    const borrowedBooks = await this.getBorrowedBooks(MaDocGia);
+    return borrowedBooks.length > 0; // Trả về true nếu đã mượn sách
   }
 }
 

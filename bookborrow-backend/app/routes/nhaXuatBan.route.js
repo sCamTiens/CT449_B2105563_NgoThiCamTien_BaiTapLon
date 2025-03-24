@@ -6,15 +6,21 @@ const router = express.Router();
 // Route để lấy tất cả nhà xuất bản, tạo mới hoặc xóa tất cả
 router
   .route("/")
-  .get(nhaXuatBan.findAll) // Lấy tất cả nhà xuất bản
-  .post(nhaXuatBan.create) // Tạo mới nhà xuất bản
-  .delete(nhaXuatBan.deleteAll); // Xóa tất cả nhà xuất bản
+  .get(nhaXuatBan.findAll)
+  .post(nhaXuatBan.create)
+  .delete(nhaXuatBan.deleteAll);
 
 // Route để thao tác với nhà xuất bản theo ID
 router
   .route("/:id")
-  .get(nhaXuatBan.findOne) // Lấy nhà xuất bản theo ID
-  .put(nhaXuatBan.update) // Cập nhật nhà xuất bản theo ID
-  .delete(nhaXuatBan.delete); // Xóa nhà xuất bản theo ID
+  .get(nhaXuatBan.findOne)
+  .put(nhaXuatBan.update)
+  .delete(nhaXuatBan.delete);
+
+// Route: Lấy sách theo mã nhà xuất bản
+router.get("/books/:MaNXB", nhaXuatBan.getBooksByPublisher);
+
+// Route: Lấy thông tin nhà xuất bản theo mã (MaNXB)
+router.get("/info/:MaNXB", nhaXuatBan.getPublisherInfo);
 
 module.exports = router;

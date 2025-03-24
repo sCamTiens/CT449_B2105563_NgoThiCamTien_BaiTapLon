@@ -2,6 +2,7 @@ const TheoDoiMuonSachService = require("../services/theoDoiMuonSach.service");
 const MongoDB = require("../utils/mongodb.util");
 const ApiError = require("../api-error");
 
+// Tạo mới theo dõi mượn sách
 exports.create = async (req, res, next) => {
   if (!req.body?.MaDocGia || !req.body?.MaSach) {
     return next(new ApiError(400, "MaDocGia and MaSach can not be empty"));
@@ -20,6 +21,7 @@ exports.create = async (req, res, next) => {
   }
 };
 
+// Lấy tất cả theo dõi mượn sách
 exports.findAll = async (req, res, next) => {
   let documents = [];
   try {
@@ -41,6 +43,7 @@ exports.findAll = async (req, res, next) => {
   }
 };
 
+// Lấy thông tin theo dõi mượn sách theo ID
 exports.findOne = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -63,6 +66,7 @@ exports.findOne = async (req, res, next) => {
   }
 };
 
+// Cập nhật theo dõi mượn sách theo ID
 exports.update = async (req, res, next) => {
   const { id } = req.params;
   const payload = req.body;
@@ -89,6 +93,7 @@ exports.update = async (req, res, next) => {
   }
 };
 
+// Xóa theo dõi mượn sách theo ID
 exports.delete = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -111,6 +116,7 @@ exports.delete = async (req, res, next) => {
   }
 };
 
+// Xóa tất cả theo dõi mượn sách
 exports.deleteAll = async (req, res, next) => {
   try {
     const theoDoiMuonSachService = new TheoDoiMuonSachService(MongoDB.client);
@@ -125,5 +131,56 @@ exports.deleteAll = async (req, res, next) => {
         "An error occurred while removing all theo dõi mượn sách"
       )
     );
+  }
+};
+
+// Lấy danh sách sách mà độc giả đã mượn
+exports.getBooksBorrowedByReader = async (req, res, next) => {
+  try {
+    const { MaDocGia } = req.params;
+    const service = new TheoDoiMuonSachService(MongoDB.client);
+    const books = await service.getBooksBorrowedByReader(MaDocGia);
+    res.json(books);
+  } catch (error) {
+    return next(new ApiError(500, "Error getting books for reader"));
+  }
+};
+
+// Lấy danh sách sách mượn bởi nhân viên
+exports.getBooksBorrowedByEmployee = async (req, res, next) => {
+  try {
+    const { MSNV } = req.params;
+    const service = new TheoDoiMuonSachService(MongoDB.client);
+    const books = await service.getBooksBorrowedByEmployee(MSNV);
+    res.json(books);
+  } catch (error) {
+    return next(new ApiError(500, "Error getting books for employee"));
+  }
+};
+
+// Lấy thông tin chi tiết sách theo MaSach
+exports.getBookDetails = async (req, res, next) => {
+  try {
+    const { MaSach } = req.params;
+    const service = new TheoDoiMuonSachService(MongoDB.client);
+    const book = await service.getBookDetails(MaSach);
+    if (!book) {
+      return next(new ApiError(404, "Book not found"));
+    }
+    res.json(book);
+  } catch (error) {
+    return next(new ApiError(500, "Error retrieving book details"));
+  }
+};
+
+// Kiểm tra sách đã trả hay chưa
+exports.checkReturnStatus = async (req, res, next) => {
+  try {
+    const { MaSach } = req.params;
+    const service = new TheoDoiMuonSachService(MongoDB.client);
+    const isReturned = await service.checkReturnStatus(MaSach);
+    res.json({ MaSach, isReturned });
+  } catch (error) {
+    return next(new ApiError(500, "Error checking return status"));
   }
 };
