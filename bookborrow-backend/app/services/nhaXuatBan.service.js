@@ -3,7 +3,6 @@ const { ObjectId } = require("mongodb");
 class NhaXuatBanService {
   constructor(client) {
     this.NhaXuatBan = client.db().collection("NhaXuatBan");
-    this.Sach = client.db().collection("Sach"); // Liên kết với bảng Sách
   }
 
   // Định nghĩa phương thức xử lý dữ liệu nhà xuất bản (extract)
@@ -22,6 +21,26 @@ class NhaXuatBanService {
 
   // Tạo mới nhà xuất bản
   async create(payload) {
+    // Nếu không có MaNXB, tự tạo mã mới
+    if (!payload.MaNXB) {
+      const latest = await this.NhaXuatBan.find({})
+        .sort({ MaNXB: -1 }) // Sắp xếp giảm dần theo MaNXB
+        .limit(1)
+        .toArray();
+
+      let nextNumber = 1;
+
+      if (latest.length > 0) {
+        const lastMaNXB = latest[0].MaNXB;
+        const match = lastMaNXB.match(/\d+$/); // Lấy phần số ở cuối
+        if (match) {
+          nextNumber = parseInt(match[0]) + 1;
+        }
+      }
+
+      payload.MaNXB = `NXB${nextNumber.toString().padStart(3, "0")}`; // VD: NV001, NV002
+    }
+
     const nhaXuatBan = this.extractNhaXuatBanData(payload);
     const result = await this.NhaXuatBan.findOneAndUpdate(
       { MaNXB: nhaXuatBan.MaNXB },
@@ -80,16 +99,24 @@ class NhaXuatBanService {
     return result.deletedCount;
   }
 
-  // Lấy thông tin sách theo mã nhà xuất bản
+  // Lấy danh sách sách theo MaNXB
   async getBooksByPublisher(MaNXB) {
-    const books = await this.Sach.find({ MaNXB }).toArray();
-    return books;
+    try {
+      return await this.bookCollection.find({ MaNXB }).toArray(); // Truy vấn tất cả sách thuộc MaNXB
+    } catch (error) {
+      throw new Error("Lỗi khi lấy sách");
+    }
   }
 
-  // Lấy thông tin nhà xuất bản từ mã nhà xuất bản (MaNXB)
-  async getPublisherInfo(MaNXB) {
-    const publisher = await this.NhaXuatBan.findOne({ MaNXB });
-    return publisher;
+  // Kiểm tra xem MaNXB có tồn tại trong cơ sở dữ liệu không
+  async checkMaNXBExists(MaNXB) {
+    try {
+      // Sử dụng countDocuments để đếm số lượng tài liệu có MaNXB trùng với MaNXB cần kiểm tra
+      const count = await this.NhaXuatBan.countDocuments({ MaNXB });
+      return count > 0; // Nếu count > 0, MaNXB đã tồn tại
+    } catch (error) {
+      throw new Error("Lỗi khi kiểm tra MaNXB");
+    }
   }
 }
 

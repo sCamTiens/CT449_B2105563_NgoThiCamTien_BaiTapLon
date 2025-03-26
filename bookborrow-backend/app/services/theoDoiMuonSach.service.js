@@ -109,6 +109,16 @@ class TheoDoiMuonSachService {
     });
     return record ? false : true; // Trả về false nếu chưa trả, true nếu sách đã được trả
   }
+
+  // Kiểm tra sách có tồn tại trong bảng TheoDoiMuonSach không
+  async checkBookExistsInBorrowList(MaSach) {
+    try {
+      const record = await this.TheoDoiMuonSach.findOne({ MaSach });
+      return !!record; // Trả về true nếu có bản ghi, false nếu không
+    } catch (error) {
+      throw new Error("Lỗi khi kiểm tra sách trong danh sách mượn");
+    }
+  }
 }
 
 module.exports = TheoDoiMuonSachService;
