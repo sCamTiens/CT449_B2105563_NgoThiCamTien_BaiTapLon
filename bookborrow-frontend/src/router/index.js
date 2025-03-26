@@ -1,106 +1,138 @@
 import { createWebHistory, createRouter } from "vue-router";
-
-// Import các views tương ứng
-import BookList from "@/views/BookList.vue"; // Trang danh sách sách
-import MuonSachList from "@/views/MuonSachList.vue"; // Trang quản lý mượn sách
-import DocGiaList from "@/views/DocGiaList.vue"; // Trang quản lý độc giả
-import NhaXuatBanList from "@/views/NhaXuatBanList.vue"; // Trang danh sách nhà xuất bản
-import NhanVienList from "@/views/NhanVienList.vue"; // Trang danh sách nhân viên
+import NhaXuatBan from "@/views/NhaXuatBan.vue";
+import Book from "@/views/Book.vue";
+import DocGia from "@/views/DocGia.vue";
+import MuonSach from "@/views/MuonSach.vue";
+import NhanVien from "@/views/NhanVien.vue";
+import Login from "@/views/Login.vue";
+import Register from "@/views/Register.vue";
+import Logout from "@/views/Logout.vue";
+import Account from "@/views/Account.vue";
 
 const routes = [
-  // Quản lý sách
+  // Trang mặc định: chuyển hướng "/" về "/login"
   {
     path: "/",
-    name: "booklist", // Tên route cho danh sách sách
-    component: BookList, // Component cho danh sách sách
+    redirect: "/login",
   },
 
-  // // Thêm sách mới
-  // {
-  //   path: "/book/add",
-  //   name: "book.add", // Route để thêm sách mới
-  //   component: () => import("@/views/BookAdd.vue"),
-  //   props: true,
-  // },
-
-  // // Sửa thông tin sách
-  // {
-  //   path: "/book/edit/:id",
-  //   name: "book.edit",
-  //   component: () => import("@/views/BookEdit.vue"),
-  //   props: true,
-  // },
-
-  // Quản lý mượn sách
+  // Trang đăng nhập
   {
-    path: "/muonsach",
-    name: "muonsachlist", // Tên route cho quản lý mượn sách
-    component: MuonSachList, // Component quản lý mượn sách
+    path: "/login",
+    name: "login",
+    component: Login,
   },
-  // {
-  //   path: "/muonsach/add",
-  //   name: "muonsach.add", // Tên route cho quản lý mượn sách
-  //   component: MuonSachList, // Component quản lý mượn sách
-  // },
-  // {
-  //   path: "/muonsach",
-  //   name: "muonsach.edit", // Tên route cho quản lý mượn sách
-  //   component: MuonSachList, // Component quản lý mượn sách
-  // },
+
+  // Trang đăng ký
+  {
+    path: "/register",
+    name: "register",
+    component: Register,
+  },
+
+  // Trang tài khoản
+  {
+    path: "/account",
+    name: "account",
+    component: Account,
+  },
+
+  // Trang xuất
+  {
+    path: "/logout",
+    name: "logout",
+    component: Logout,
+  },
+
+  // Quản lý sách
+  {
+    path: "/books",
+    name: "book",
+    component: Book,
+  },
+  {
+    path: "/books/:id",
+    name: "book.edit",
+    component: () => import("@/views/edit/BookEdit.vue"),
+    props: true, // Truyền các biến trong $route.params vào làm props
+  },
+  {
+    path: "/books",
+    name: "book.add",
+    component: () => import("@/views/add/BookAdd.vue"),
+  },
 
   // Quản lý đọc giả
   {
-    path: "/docgia",
-    name: "docgialist",
-    component: DocGiaList,
+    path: "/docgias",
+    name: "docgia",
+    component: DocGia,
   },
-  // {
-  //   path: "/docgia/add",
-  //   name: "docgia.add",
-  //   component: DocGiaForm, // hoặc component thêm độc giả
-  // },
-  // {
-  //   path: "/docgia/:id",
-  //   name: "docgia.edit",
-  //   component: DocGiaForm,
-  //   props: true,
-  // },
-
-  // Quản lý nhà xuất bản
   {
-    path: "/nhaxuatban",
-    name: "nhaxuatbanlist",
-    component: NhaXuatBanList,
+    path: "/docgias/:id",
+    name: "docgia.edit",
+    component: () => import("@/views/edit/DocGiaEdit.vue"),
+    props: true, // Truyền các biến trong $route.params vào làm props
   },
-  // {
-  //   path: "/nha-xuat-ban/add",
-  //   name: "nxb.add",
-  //   component: NhaXuatBanForm,
-  // },
-  // {
-  //   path: "/nha-xuat-ban/:id",
-  //   name: "nxb.edit",
-  //   component: NhaXuatBanForm,
-  //   props: true,
-  // },
+  {
+    path: "/docgias",
+    name: "docgia.add",
+    component: () => import("@/views/add/DocGiaAdd.vue"),
+  },
+
+  // Quản lý mượn sách
+  {
+    path: "/muonsachs",
+    name: "muonsach",
+    component: MuonSach,
+  },
+  {
+    path: "/muonsachs/:id",
+    name: "muonsach.edit",
+    component: () => import("@/views/edit/MuonSachEdit.vue"),
+    props: true, // Truyền các biến trong $route.params vào làm props
+  },
+  {
+    path: "/muonsachs",
+    name: "muonsach.add",
+    component: () => import("@/views/add/MuonSachAdd.vue"),
+  },
 
   // Quản lý nhân viên
   {
-    path: "/nhanvien",
-    name: "nhanvienlist",
-    component: NhanVienList,
+    path: "/nhanviens",
+    name: "nhanvien",
+    component: NhanVien,
   },
-  // {
-  //   path: "/nhan-vien/add",
-  //   name: "nhanvien.add",
-  //   component: NhanVienForm,
-  // },
-  // {
-  //   path: "/nhan-vien/:id",
-  //   name: "nhanvien.edit",
-  //   component: NhanVienForm,
-  //   props: true,
-  // },
+  {
+    path: "/nhanviens/:id",
+    name: "nhanvien.edit",
+    component: () => import("@/views/edit/NhanVienEdit.vue"),
+    props: true, // Truyền các biến trong $route.params vào làm props
+  },
+  {
+    path: "/nhanviens",
+    name: "nhanvien.add",
+    component: () => import("@/views/add/NhanVienAdd.vue"),
+  },
+
+  // Quản lý nhà sản xuất
+  {
+    path: "/nhaxuatbans",
+    name: "nhaxuatban",
+    component: NhaXuatBan,
+  },
+  {
+    path: "/nhaxuatbans/:id",
+    name: "nhaxuatban.edit",
+    component: () => import("@/views/edit/NhaXuatBanEdit.vue"),
+    props: true, // Truyền các biến trong $route.params vào làm props
+  },
+  {
+    path: "/nhaxuatbans",
+    name: "nhaxuatban.add",
+    component: () => import("@/views/add/NhaXuatBanAdd.vue"),
+  },
 
   // Không có
   {
