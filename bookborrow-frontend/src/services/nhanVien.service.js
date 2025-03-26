@@ -1,7 +1,7 @@
 import createApiClient from "./api.service.js"; // Import hàm tạo client API
 
 class NhanVienService {
-  constructor(baseUrl = "/api/nhanVien") {
+  constructor(baseUrl = "/api/nhanviens") {
     this.api = createApiClient(baseUrl); // Khởi tạo client API với baseUrl tương ứng
   }
 
@@ -35,19 +35,9 @@ class NhanVienService {
     return (await this.api.delete(`/${id}`)).data;
   }
 
-  // Lấy danh sách sách mà nhân viên đang quản lý (theo dõi mượn)
-  async getBorrowedBooks(MSNV) {
-    return (await this.api.get(`/borrowed/${MSNV}`)).data;
-  }
-
-  // Nhân viên mượn sách
-  async addBorrowedBook(MSNV, MaSach, NgayMuon) {
-    return (await this.api.post(`/borrow/${MSNV}`, { MaSach, NgayMuon })).data;
-  }
-
-  // Nhân viên trả sách
-  async returnBook(MaSach) {
-    return (await this.api.put(`/return/${MaSach}`)).data;
+  // Đăng nhập
+  async loginNhanVien(data) {
+    return (await this.api.post("/login", data)).data;
   }
 }
 

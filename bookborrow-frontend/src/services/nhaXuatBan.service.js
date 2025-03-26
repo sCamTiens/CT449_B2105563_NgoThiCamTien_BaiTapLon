@@ -1,7 +1,7 @@
-import createApiClient from "./api.service.js"; // Import hàm tạo client API
+import createApiClient from "./api.service.js";
 
 class NhaXuatBanService {
-  constructor(baseUrl = "/api/nhaXuatBan") {
+  constructor(baseUrl = "/api/nhaxuatbans") {
     this.api = createApiClient(baseUrl); // Khởi tạo client API với baseUrl tương ứng
   }
 
@@ -37,13 +37,18 @@ class NhaXuatBanService {
 
   // Lấy danh sách sách của nhà xuất bản theo MaNXB
   async getBooksByPublisher(MaNXB) {
-    return (await this.api.get(`/books/${MaNXB}`)).data;
+    return (await this.api.get(`/book/${MaNXB}`)).data;
   }
 
   // Lấy thông tin nhà xuất bản theo MaNXB (không dùng ObjectId)
   async getPublisherInfo(MaNXB) {
     return (await this.api.get(`/info/${MaNXB}`)).data;
   }
+
+  //Kiểm tra xem MaNXB có tồn tại trong cơ sở dữ liệu không
+  // async checkMaNXBExists(MaNXB) {
+  //   return (await this.api.get(`/checkMaNXB/${MaNXB}`)).data;
+  // }
 }
 
 export default new NhaXuatBanService(); // Export một instance duy nhất của NhaXuatBanService

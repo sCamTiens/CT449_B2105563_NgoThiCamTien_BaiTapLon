@@ -1,7 +1,7 @@
 import createApiClient from "./api.service.js"; // Import hàm tạo client API
 
 class DocGiaService {
-  constructor(baseUrl = "/api/docGia") {
+  constructor(baseUrl = "/api/docgias") {
     this.api = createApiClient(baseUrl); // Khởi tạo client API với baseUrl tương ứng
   }
 

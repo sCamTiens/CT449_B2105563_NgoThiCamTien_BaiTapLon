@@ -1,7 +1,7 @@
 import createApiClient from "./api.service.js"; // Import hàm tạo client API
 
 class TheoDoiMuonSachService {
-  constructor(baseUrl = "/api/theoDoiMuonSach") {
+  constructor(baseUrl = "/api/muonsachs") {
     this.api = createApiClient(baseUrl); // Khởi tạo client API với baseUrl tương ứng
   }
 
@@ -53,6 +53,11 @@ class TheoDoiMuonSachService {
   // Kiểm tra tình trạng trả sách (true nếu đã trả)
   async checkReturnStatus(MaSach) {
     return (await this.api.get(`/check-return/${MaSach}`)).data;
+  }
+
+  // Kiểm tra sách đã có trong danh sách mượn chưa
+  async checkBookInBorrowList(MaSach) {
+    return (await this.api.get(`/check-book/${MaSach}`)).data;
   }
 }
 
