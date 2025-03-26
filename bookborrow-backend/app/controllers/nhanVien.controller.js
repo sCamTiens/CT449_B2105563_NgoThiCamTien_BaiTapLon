@@ -4,9 +4,10 @@ const ApiError = require("../api-error");
 
 // Tạo nhân viên
 exports.create = async (req, res, next) => {
-  if (!req.body?.MSNV) {
-    return next(new ApiError(400, "MSNV can not be empty"));
+  if (!req.body?.HoTenNV || !req.body?.Password || !req.body?.ChucVu) {
+    return next(new ApiError(400, "Vui lòng nhập đầy đủ thông tin bắt buộc"));
   }
+
   try {
     const nhanVienService = new NhanVienService(MongoDB.client);
     const document = await nhanVienService.create(req.body);
@@ -41,9 +42,6 @@ exports.findAll = async (req, res, next) => {
 exports.findOne = async (req, res, next) => {
   const { id } = req.params;
   try {
-    if (!id) {
-      return next(new ApiError(400, "Id can not be empty"));
-    }
     const nhanVienService = new NhanVienService(MongoDB.client);
     const document = await nhanVienService.findById(id);
     if (!document || !document.length) {
@@ -116,58 +114,46 @@ exports.deleteAll = async (req, res, next) => {
   }
 };
 
-// Lấy danh sách sách mà nhân viên đang theo dõi
-exports.getBooksByEmployee = async (req, res, next) => {
+// Đăng nhập
+exports.login = async (req, res, next) => {
+  const { username, password } = req.body;
+
+  // Kiểm tra đầu vào trước
+  if (!username || !password) {
+    return next(new ApiError(400, "Vui lòng nhập đầy đủ họ tên và mật khẩu"));
+  }
+
   try {
-    const { MSNV } = req.params;
     const nhanVienService = new NhanVienService(MongoDB.client);
-    const books = await nhanVienService.getBooksByEmployee(MSNV);
-    res.json(books);
+    const user = await nhanVienService.login(username, password);
+
+    if (!user) {
+      return next(new ApiError(401, "Họ tên hoặc mật khẩu không đúng"));
+    }
+
+    res.json({
+      message: "Đăng nhập thành công",
+      user: {
+        MSNV: user.MSNV,
+        HoTenNV: user.HoTenNV,
+        ChucVu: user.ChucVu,
+      },
+    });
   } catch (error) {
-    return next(
-      new ApiError(500, "Error retrieving books managed by the employee")
-    );
+    console.error("Lỗi đăng nhập:", error); // 👈 Thêm dòng này để debug
+    return next(new ApiError(500, "Lỗi khi đăng nhập nhân viên"));
   }
 };
 
-// Nhân viên mượn sách (thêm mới vào TheoDoiMuonSach)
-exports.addBorrowedBook = async (req, res, next) => {
+// Đăng ký
+exports.register = async (req, res, next) => {
   try {
-    const { MSNV } = req.params;
-    const { MaSach, NgayMuon } = req.body;
-
-    if (!MaSach || !NgayMuon) {
-      return next(new ApiError(400, "MaSach and NgayMuon are required"));
-    }
-
     const nhanVienService = new NhanVienService(MongoDB.client);
-    const result = await nhanVienService.addBorrowedBook(
-      MSNV,
-      MaSach,
-      new Date(NgayMuon)
-    );
-    res.json(result);
+    const result = await nhanVienService.register(req.body);
+    res.json({ message: "Đăng ký thành công", data: result });
   } catch (error) {
-    return next(
-      new ApiError(500, "Error adding borrowed book for the employee")
-    );
-  }
-};
-
-// Trả sách (update NgayTra)
-exports.returnBook = async (req, res, next) => {
-  try {
-    const { MaSach } = req.params;
-
-    const nhanVienService = new NhanVienService(MongoDB.client);
-    const result = await nhanVienService.returnBook(MaSach);
-
-    if (result.modifiedCount === 0) {
-      return next(new ApiError(404, "No matching unreturned book found"));
-    }
-
-    res.json({ message: "Book returned successfully", result });
-  } catch (error) {
-    return next(new ApiError(500, "Error returning the book"));
+    res
+      .status(400)
+      .json({ message: error.message || "Lỗi khi đăng ký nhân viên" });
   }
 };

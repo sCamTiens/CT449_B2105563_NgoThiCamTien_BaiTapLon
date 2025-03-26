@@ -1,11 +1,12 @@
 const NhaXuatBanService = require("../services/nhaXuatBan.service");
+const BookService = require("../services/book.service");
 const MongoDB = require("../utils/mongodb.util");
 const ApiError = require("../api-error");
 
 // Thêm nhà xuất bản
 exports.create = async (req, res, next) => {
-  if (!req.body?.MaNXB) {
-    return next(new ApiError(400, "MaNXB can not be empty"));
+  if (!req.body?.TenNXB || !req.body?.DiaChi) {
+    return next(new ApiError(400, "Vui lòng nhập đầy đủ thông tin bắt buộc"));
   }
   try {
     const nhaXuatBanService = new NhaXuatBanService(MongoDB.client);
@@ -37,7 +38,7 @@ exports.findAll = async (req, res, next) => {
   }
 };
 
-// Lấy nahf xuất bản theo ID
+// Lấy nhà xuất bản theo ID
 exports.findOne = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -66,7 +67,7 @@ exports.update = async (req, res, next) => {
   const payload = req.body;
   try {
     if (!id) {
-      return next(new ApiError(400, "Id can not be valid"));
+      return next(new ApiError(400, "ID can not be valid"));
     }
     if (Object.keys(payload).length === 0) {
       return next(new ApiError(400, "Data to update can not be empty"));
@@ -124,18 +125,14 @@ exports.deleteAll = async (req, res, next) => {
 
 // Lấy danh sách sách theo MaNXB
 exports.getBooksByPublisher = async (req, res, next) => {
+  const { MaNXB } = req.params;
   try {
-    const { MaNXB } = req.params;
-    const nhaXuatBanService = new NhaXuatBanService(MongoDB.client);
-    const books = await nhaXuatBanService.getBooksByPublisher(MaNXB);
-    res.json(books);
+    const bookService = new BookService(MongoDB.client);
+    const books = await bookService.find({ MaNXB }); // Truy vấn sách theo MaNXB
+    res.json(books); // Trả về danh sách sách nếu tìm thấy
   } catch (error) {
-    return next(
-      new ApiError(
-        500,
-        `Error retrieving books for publisher MaNXB=${req.params.MaNXB}`
-      )
-    );
+    console.error("Error retrieving books:", error);
+    return next(new ApiError(500, "Error retrieving books for publisher"));
   }
 };
 
@@ -156,5 +153,18 @@ exports.getPublisherInfo = async (req, res, next) => {
         `Error retrieving publisher info for MaNXB=${req.params.MaNXB}`
       )
     );
+  }
+};
+
+// Phương thức kiểm tra MaNXB đã tồn tại hay chưa
+exports.checkMaNXBExists = async (req, res, next) => {
+  const { MaNXB } = req.params; // Lấy MaNXB từ tham số route
+  try {
+    // Gọi service để kiểm tra MaNXB có tồn tại không
+    const exists = await NhaXuatBanService.checkMaNXBExists(MaNXB);
+    res.json({ exists }); // Trả về true hoặc false
+  } catch (error) {
+    console.error("Error checking MaNXB:", error);
+    return next(new ApiError(500, "Lỗi khi kiểm tra mã nhà xuất bản"));
   }
 };

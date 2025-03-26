@@ -4,6 +4,16 @@ const ApiError = require("../api-error");
 
 // Tạo mới độc giả
 exports.create = async (req, res, next) => {
+  if (
+    !req.body?.HoLot ||
+    !req.body?.Ten ||
+    !req.body?.NgaySinh ||
+    !req.body?.Phai ||
+    !req.body?.DiaChi ||
+    !req.body?.DienThoai
+  ) {
+    return next(new ApiError(400, "Vui lòng nhập đầy đủ thông tin bắt buộc"));
+  }
   if (!req.body?.MaDocGia) {
     return next(new ApiError(400, "MaDocGia can not be empty"));
   }

@@ -1,11 +1,19 @@
 const BookService = require("../services/book.service");
+const NhaXuatBanService = require("../services/nhaXuatBan.service");
 const MongoDB = require("../utils/mongodb.util");
 const ApiError = require("../api-error");
 
 // Tạo mới sách
 exports.create = async (req, res, next) => {
-  if (!req.body?.MaSach) {
-    return next(new ApiError(400, "MaSach can not be empty"));
+  if (
+    !req.body?.TenSach ||
+    !req.body?.DonGia ||
+    !req.body?.SoQuyen ||
+    !req.body?.NamXuatBan ||
+    !req.body?.MaNXB ||
+    !req.body?.TacGia
+  ) {
+    return next(new ApiError(400, "Vui lòng nhập đầy đủ thông tin bắt buộc"));
   }
   try {
     const bookService = new BookService(MongoDB.client);
@@ -83,9 +91,6 @@ exports.delete = async (req, res, next) => {
   try {
     const bookService = new BookService(MongoDB.client);
     const document = await bookService.delete(id);
-    if (!document) {
-      return next(new ApiError(404, "Book not found"));
-    }
     res.json(document);
   } catch (error) {
     return next(
@@ -145,5 +150,17 @@ exports.getPublisherInfo = async (req, res, next) => {
     res.json(publisher);
   } catch (error) {
     return next(new ApiError(500, "Error retrieving publisher info"));
+  }
+};
+
+// Lấy danh sách tất cả NXB
+exports.getAllNXB = async (req, res, next) => {
+  try {
+    const nhaXuatBanService = new NhaXuatBanService(MongoDB.client);
+    const danhSachNXB = await nhaXuatBanService.find({});
+    res.json(danhSachNXB);
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách NXB:", error);
+    res.status(500).json({ message: "Lỗi server khi lấy danh sách NXB" });
   }
 };

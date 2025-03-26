@@ -184,3 +184,17 @@ exports.checkReturnStatus = async (req, res, next) => {
     return next(new ApiError(500, "Error checking return status"));
   }
 };
+
+// Kiểm tra xem sách đã có trong danh sách mượn chưa
+exports.checkBookInBorrowList = async (req, res, next) => {
+  try {
+    const { MaSach } = req.params;
+    const theoDoiMuonSachService = new TheoDoiMuonSachService(MongoDB.client);
+    const exists = await theoDoiMuonSachService.checkBookExistsInBorrowList(
+      MaSach
+    );
+    res.json({ exists });
+  } catch (error) {
+    return next(new ApiError(500, "Lỗi khi kiểm tra sách trong bản ghi mượn"));
+  }
+};
