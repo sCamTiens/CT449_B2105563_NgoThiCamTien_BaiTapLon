@@ -28,8 +28,9 @@
                 <label>Số điện thoại</label>
                 <input v-model="nhanvien.SoDienThoai" type="text" class="form-control" />
             </div>
-
-            <button class="btn btn-primary">Cập nhật</button>
+            <div class="d-flex justify-content-center mb-3">
+                <button class="btn btn-primary">Cập nhật</button>
+            </div>
         </form>
 
         <div v-if="message" class="alert alert-success mt-3">

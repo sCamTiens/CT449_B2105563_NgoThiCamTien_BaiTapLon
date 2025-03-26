@@ -40,7 +40,7 @@
             <ErrorMessage name="DienThoai" class="error-feedback" />
         </div>
 
-        <div class="form-group">
+        <div class="form-group d-flex justify-content-center mb-3">
             <button class="btn btn-primary">Lưu</button>
             <button v-if="docGiaLocal._id" type="button" class="ml-2 btn btn-danger" @click="deleteDocGia">
                 Xóa
