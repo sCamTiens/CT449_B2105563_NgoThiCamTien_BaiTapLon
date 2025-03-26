@@ -1,13 +1,10 @@
 const express = require("express");
 const cors = require("cors");
-
-// Import các router cho các bảng
+const nxbRouter = require("./app/routes/nhaXuatBan.route");
 const bookRouter = require("./app/routes/book.route");
-const theoDoiMuonSachRouter = require("./app/routes/theoDoiMuonSach.route");
 const nhanVienRouter = require("./app/routes/nhanVien.route");
-const nhaXuatBanRouter = require("./app/routes/nhaXuatBan.route");
 const docGiaRouter = require("./app/routes/docGia.route");
-
+const muonSachRouter = require("./app/routes/theoDoiMuonSach.route");
 const ApiError = require("./app/api-error");
 
 const app = express();
@@ -15,17 +12,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Route chính
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to book borrow management system." });
+  res.json({ message: "Welcome to contact book application." });
 });
 
-// Các route cho từng bảng
+app.use("/api/nhaxuatbans", nxbRouter);
 app.use("/api/books", bookRouter);
-app.use("/api/theoDoiMuonSach", theoDoiMuonSachRouter);
-app.use("/api/nhanVien", nhanVienRouter);
-app.use("/api/nhaXuatBan", nhaXuatBanRouter);
-app.use("/api/docGia", docGiaRouter);
+app.use("/api/nhanviens", nhanVienRouter);
+app.use("/api/docgias", docGiaRouter);
+app.use("/api/muonsachs", muonSachRouter);
 
 // handle 404 response
 app.use((req, res, next) => {
