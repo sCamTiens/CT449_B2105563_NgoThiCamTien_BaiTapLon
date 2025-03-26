@@ -20,12 +20,29 @@ export default {
 
 <template>
     <div class="input-group">
-        <input type="text" class="form-control" placeholder="Nhập thông tin cần tìm" :value="modelValue"
+        <input type="text" class="form-control" placeholder="Nhập nội dung" :value="modelValue"
             @input="updateModelValue" @keyup.enter="submit" />
         <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" @click="submit">
-                <i class="fas fa-search"></i> Tìm kiếm
+            <button class="btn" type="button" @click="submit">
+                <font-awesome-icon icon="magnifying-glass" /> Tìm kiếm
             </button>
         </div>
     </div>
 </template>
+
+<style>
+.input-group {
+    border: 1px solid #54333f;
+    border-radius: 5px;
+}
+
+.input-group-append button {
+    color: #fff;
+    background-color: #54333f;
+}
+
+.input-group-append button:hover {
+    color: #54333f;
+    background-color: #ddbebe;
+}
+</style>
