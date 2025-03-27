@@ -301,6 +301,25 @@ class TheoDoiMuonSachService {
 
     return readers;
   }
+
+  // Tìm theo dõi mượn sách theo ID và trả về số lượng sách mượn
+  async getSoLuongById(id) {
+    try {
+      const result = await this.TheoDoiMuonSach.findOne({
+        _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+      });
+
+      if (!result) {
+        throw new Error("Không tìm thấy bản ghi mượn sách");
+      }
+
+      // Trả về số lượng sách mượn từ bản ghi
+      return result.SoLuong;
+    } catch (error) {
+      console.error("Lỗi khi tìm theo dõi mượn sách theo ID:", error);
+      throw new Error("Lỗi khi lấy số lượng sách mượn theo ID");
+    }
+  }
 }
 
 module.exports = TheoDoiMuonSachService;

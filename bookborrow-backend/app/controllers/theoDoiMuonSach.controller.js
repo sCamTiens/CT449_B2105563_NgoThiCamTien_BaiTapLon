@@ -264,3 +264,40 @@ exports.returnBook = async (req, res, next) => {
     return next(new ApiError(500, "Lỗi khi trả sách"));
   }
 };
+
+// Cập nhật số lượng sách
+exports.updateBookQuantity = async (req, res, next) => {
+  const { id } = req.params; // Mã sách từ URL params
+  const { SoQuyen } = req.body; // Số lượng sách cần cập nhật từ body request
+
+  try {
+    const theoDoiMuonSachService = new TheoDoiMuonSachService(MongoDB.client);
+    const result = await theoDoiMuonSachService.updateBookQuantity(id, SoQuyen); // Gọi hàm service để cập nhật
+    res.json(result); // Trả về kết quả sau khi cập nhật
+  } catch (error) {
+    console.error("Lỗi khi cập nhật số lượng sách:", error);
+    return next(new ApiError(500, "Lỗi khi cập nhật số lượng sách")); // Xử lý lỗi khi không thể cập nhật
+  }
+};
+
+// Lấy số lượng sách mượn theo ID
+exports.getSoLuongById = async (req, res, next) => {
+  const { id } = req.params; // Lấy ID từ tham số URL
+
+  try {
+    if (!id) {
+      return next(new ApiError(400, "ID không hợp lệ"));
+    }
+
+    const theoDoiMuonSachService = new TheoDoiMuonSachService(MongoDB.client);
+
+    // Gọi hàm findSoLuongById để lấy số lượng sách mượn
+    const soLuong = await theoDoiMuonSachService.getSoLuongById(id);
+
+    // Trả về số lượng sách mượn
+    res.json({ SoLuong: soLuong });
+  } catch (error) {
+    console.error("Lỗi khi lấy số lượng sách mượn:", error);
+    return next(new ApiError(500, "Lỗi khi lấy số lượng sách mượn"));
+  }
+};

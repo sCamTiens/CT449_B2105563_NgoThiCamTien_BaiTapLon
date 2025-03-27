@@ -85,6 +85,18 @@ class TheoDoiMuonSachService {
     // Gọi PUT request đến API trả sách
     return (await this.api.put(`/return/${id}`)).data;
   }
+
+  // Cập nhật số lượng sách trong kho
+  async updateBookQuantity(MaSach, SoQuyen) {
+    // Gửi PUT request đến API cập nhật số lượng sách
+    return (await this.api.put(`/updateQuantity/${MaSach}`, { SoQuyen })).data;
+  }
+
+  // Lấy số lượng sách trong bản ghi mượn theo ID
+  async getSoLuongById(id) {
+    // Gọi PUT request đến API trả sách
+    return (await this.api.put(`/count/${id}`)).data;
+  }
 }
 
 export default new TheoDoiMuonSachService(); // Export một instance duy nhất

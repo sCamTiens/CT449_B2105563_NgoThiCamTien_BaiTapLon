@@ -3,6 +3,12 @@ const theoDoiMuonSach = require("../controllers/theoDoiMuonSach.controller");
 
 const router = express.Router();
 
+// Lấy số lượng của bản ghi
+router.get("/count/:id", theoDoiMuonSach.getSoLuongById);
+
+// Route (routes.js)
+router.put("/books/updateQuantity/:id", theoDoiMuonSach.updateBookQuantity);
+
 // Trả sách
 router.put("/return/:id", theoDoiMuonSach.returnBook);
 
