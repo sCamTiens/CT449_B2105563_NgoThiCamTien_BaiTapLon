@@ -79,6 +79,11 @@ class TheoDoiMuonSachService {
   async getReadersWithOverdueBooks() {
     return (await this.api.get(`/readers-with-overdue`)).data;
   }
+
+  // Thêm phương thức trả sách
+  async returnBook(id, NgayTra) {
+    return (await this.api.put(`/return/${id}`, { NgayTra })).data;
+  }
 }
 
 export default new TheoDoiMuonSachService(); // Export một instance duy nhất

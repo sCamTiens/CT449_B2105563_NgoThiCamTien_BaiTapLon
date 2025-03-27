@@ -18,13 +18,20 @@
             <li class="nav-item">
                 <router-link :to="{ name: 'docgia' }" class="nav-link" :class="{ active: isActiveRoute('docgia') }">
                     <font-awesome-icon icon="user" class="me-2" />
-                    Đọc giả
+                    Độc giả
                 </router-link>
             </li>
             <li class="nav-item">
                 <router-link :to="{ name: 'muonsach' }" class="nav-link" :class="{ active: isActiveRoute('muonsach') }">
                     <font-awesome-icon icon="book-open-reader" class="me-2" />
                     Mượn sách
+                </router-link>
+            </li>
+            <li class="nav-item">
+                <router-link :to="{ name: 'thongkemuon' }" class="nav-link"
+                    :class="{ active: isActiveRoute('thongkemuon') }">
+                    <font-awesome-icon icon="chart-bar" class="me-2" />
+                    Thống kê mượn sách
                 </router-link>
             </li>
             <li v-if="isAdmin" class="nav-item">

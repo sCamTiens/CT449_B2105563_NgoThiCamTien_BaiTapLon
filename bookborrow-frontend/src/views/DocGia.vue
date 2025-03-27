@@ -134,7 +134,7 @@ export default {
             this.activeIndex = -1;
         },
         async removeAllDocGia() {
-            const confirmed = confirm('Bạn muốn xóa tất cả đọc giả?');
+            const confirmed = confirm('Bạn muốn xóa tất cả độc giả?');
             if (!confirmed) return;
             try {
                 for (const docgia of this.docgias) {

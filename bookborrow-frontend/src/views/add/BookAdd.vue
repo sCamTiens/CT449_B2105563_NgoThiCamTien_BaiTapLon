@@ -1,6 +1,8 @@
 <template>
     <div class="page">
-        <h4>Thêm Sách Mới</h4>
+        <div class="d-flex justify-content-center mb-3">
+            <h4 class="fw-bold">THÊM MỚI SÁCH</h4>
+        </div>
         <BookForm :book="book" @submit:book="createBook" />
         <p>{{ message }}</p>
     </div>

@@ -1,6 +1,8 @@
 <template>
     <div class="page">
-        <h4>Thêm Mượn Sách Mới</h4>
+        <div class="d-flex justify-content-center mb-3">
+            <h4 class="fw-bold">THÊM MỚI MƯỢN SÁCH</h4>
+        </div>
         <MuonSachForm :muonsach="muonsach" @submit:muonsach="createMuonSach" />
         <p>{{ message }}</p>
     </div>

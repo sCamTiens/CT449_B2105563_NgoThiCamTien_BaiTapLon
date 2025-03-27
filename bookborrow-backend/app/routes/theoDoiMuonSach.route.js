@@ -3,8 +3,8 @@ const theoDoiMuonSach = require("../controllers/theoDoiMuonSach.controller");
 
 const router = express.Router();
 
-// Kiểm tra bản ghi quá hạn
-router.get("/check-overdue/:MaDocGia/:MaSach", theoDoiMuonSach.checkOverdue);
+// Trả sách
+router.put("/return/:id", theoDoiMuonSach.returnBook);
 
 // Đếm số lượng bản ghi quá hạn
 router.get("/count-overdue", theoDoiMuonSach.countOverdue);

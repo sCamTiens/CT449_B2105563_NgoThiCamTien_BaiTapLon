@@ -21,6 +21,7 @@ import {
   faRedo,
   faTrash,
   faRightFromBracket,
+  faChartBar,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -32,7 +33,8 @@ library.add(
   faMagnifyingGlass,
   faRedo,
   faTrash,
-  faRightFromBracket
+  faRightFromBracket,
+  faChartBar
 );
 
 const app = createApp(App);

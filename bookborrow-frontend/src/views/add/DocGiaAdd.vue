@@ -1,6 +1,8 @@
 <template>
     <div class="page">
-        <h4>Thêm Đọc Giả Mới</h4>
+        <div class="d-flex justify-content-center mb-3">
+            <h4 class="fw-bold">THÊM MỚI ĐỘC GIẢ</h4>
+        </div>
         <DocGiaForm :docgia="docgia" @submit:docgia="createDocGia" />
         <p>{{ message }}</p>
     </div>

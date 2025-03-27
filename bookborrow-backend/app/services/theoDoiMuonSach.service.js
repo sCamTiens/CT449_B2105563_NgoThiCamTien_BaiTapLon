@@ -71,9 +71,9 @@ class TheoDoiMuonSachService {
     }
   }
 
-  // Cập nhật trạng thái trả sách
+  // Cập nhật trạng thái trả sách và số lượng sách trong kho
   async returnBook(id, NgayTra) {
-    // 1. Cập nhật ngày trả trong bảng TheoDoiMuonSach
+    // 1. Cập nhật ngày trả trong bảng TheoDoiMuonSach và chuyển trạng thái thành "Đã trả"
     const result = await this.update(id, { NgayTra, TrangThai: "Đã trả" });
 
     if (result.value) {
@@ -86,6 +86,11 @@ class TheoDoiMuonSachService {
     }
 
     return null;
+  }
+
+  // Cập nhật số lượng sách trong kho
+  async updateBookQuantity(MaSach, newQuantity) {
+    await this.Sach.updateOne({ MaSach }, { $set: { SoQuyen: newQuantity } });
   }
 
   // Tìm kiếm theo dõi mượn sách theo filter

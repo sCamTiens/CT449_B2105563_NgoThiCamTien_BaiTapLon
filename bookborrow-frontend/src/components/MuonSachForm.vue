@@ -1,9 +1,9 @@
 <template>
     <Form @submit="submitMuonSach" :validation-schema="muonSachSchema">
         <div class="form-group">
-            <label for="MaDocGia">Đọc giả</label>
+            <label for="MaDocGia">Độc giả</label>
             <Field as="select" name="MaDocGia" class="form-control" v-model="muonLocal.MaDocGia">
-                <option value="">-- Chọn đọc giả --</option>
+                <option value="">-- Chọn độc giả --</option>
                 <option v-for="docgia in danhSachDocGia" :key="docgia.MaDocGia" :value="docgia.MaDocGia">
                     {{ docgia.HoLot }} {{ docgia.Ten }}
                 </option>
@@ -23,13 +23,6 @@
         </div>
 
         <div class="form-group">
-            <label for="SoLuong">Số lượng mượn</label>
-            <Field name="SoLuong" type="number" class="form-control" v-model="muonLocal.SoLuong" min="1"
-                placeholder="Nhập số lượng muốn mượn" />
-            <ErrorMessage name="SoLuong" class="error-feedback" />
-        </div>
-
-        <div class="form-group">
             <label for="NgayMuon">Ngày mượn</label>
             <Field name="NgayMuon" type="date" class="form-control" v-model="muonLocal.NgayMuon" disabled />
             <ErrorMessage name="NgayMuon" class="error-feedback" />
@@ -40,14 +33,6 @@
             <Field name="NgayTra" type="date" class="form-control" v-model="muonLocal.NgayTra" />
             <ErrorMessage name="NgayTra" class="error-feedback" />
         </div>
-
-        <!-- Hiển thị trạng thái đã trả / chưa trả -->
-        <!-- <div class="form-group">
-            <label>Trạng thái:</label>
-            <span class="badge" :class="muonLocal.NgayTra ? 'bg-success' : 'bg-warning'">
-                {{ muonLocal.NgayTra ? "Đã trả" : "Chưa trả" }}
-            </span>
-        </div> -->
 
         <div class="form-group d-flex justify-content-center mb-3">
             <button class="btn btn-primary">Lưu</button>
@@ -73,10 +58,6 @@ export default {
         const muonSachSchema = yup.object().shape({
             MaDocGia: yup.string().required("Vui lòng chọn độc giả."),
             MaSach: yup.string().required("Vui lòng chọn sách."),
-            SoLuong: yup
-                .number()
-                .required("Vui lòng nhập số lượng mượn.")
-                .min(1, "Phải mượn ít nhất 1 quyển."),
             NgayMuon: yup.date().required("Ngày mượn là bắt buộc."),
             NgayTra: yup
                 .date()
@@ -85,10 +66,7 @@ export default {
         });
 
         return {
-            muonLocal: {
-                ...this.muonsach,
-                SoLuong: this.muonsach.SoLuong || 1,
-            },
+            muonLocal: { ...this.muonsach },
             muonSachSchema,
             danhSachDocGia: [],
             danhSachSach: []
@@ -116,12 +94,7 @@ export default {
     },
     methods: {
         submitMuonSach() {
-            // Đảm bảo dữ liệu cần thiết bao gồm SoLuong được gửi đúng
-            const payload = {
-                ...this.muonLocal,
-                SoLuong: this.muonLocal.SoLuong || 1, // Đảm bảo SoLuong được gửi
-            };
-            this.$emit("submit:muonsach", payload);
+            this.$emit("submit:muonsach", this.muonLocal);
         },
         deleteMuonSach() {
             this.$emit("delete:muonsach", this.muonLocal);

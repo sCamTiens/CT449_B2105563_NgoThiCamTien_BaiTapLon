@@ -176,7 +176,7 @@ export default {
                 name: 'muonsach.edit',
                 params: { id: this.activeMuonSach._id }
             });
-        }
+        },
     },
     mounted() {
         this.refreshList();

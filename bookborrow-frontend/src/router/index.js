@@ -44,6 +44,13 @@ const routes = [
     component: Logout,
   },
 
+  // Thống kê
+  {
+    path: "/thongkemuons",
+    name: "thongkemuon",
+    component: () => import("@/views/ThongKe.vue"),
+  },
+
   // Quản lý sách
   {
     path: "/books",

@@ -1,6 +1,8 @@
 <template>
     <div class="page">
-        <h4>Thêm Nhân Viên Mới</h4>
+        <div class="d-flex justify-content-center mb-3">
+            <h4 class="fw-bold">THÊM MỚI NHÂN VIÊN</h4>
+        </div>
         <NhanVienForm :nhanvien="nhanvien" @submit:nhanvien="createNhanVien" />
         <p>{{ message }}</p>
     </div>
