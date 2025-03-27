@@ -14,9 +14,6 @@ exports.create = async (req, res, next) => {
   ) {
     return next(new ApiError(400, "Vui lòng nhập đầy đủ thông tin bắt buộc"));
   }
-  if (!req.body?.MaDocGia) {
-    return next(new ApiError(400, "MaDocGia can not be empty"));
-  }
   try {
     const docgiaService = new DocgiaService(MongoDB.client);
     const document = await docgiaService.create(req.body);

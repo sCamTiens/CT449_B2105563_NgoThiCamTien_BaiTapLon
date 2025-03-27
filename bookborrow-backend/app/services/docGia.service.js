@@ -22,26 +22,68 @@ class DocgiaService {
     return docgia;
   }
 
+  // // Tạo mới độc giả
+  // async create(payload) {
+  //   // Nếu không có MaDocGia, tự tạo mã mới
+  //   if (!payload.MaDocGia) {
+  //     const latest = await this.Docgia.find({})
+  //       .sort({ MaDocGia: -1 }) // Sắp xếp giảm dần theo MaDocGia
+  //       .limit(1)
+  //       .toArray();
+
+  //     let nextNumber = 1;
+
+  //     if (latest.length > 0) {
+  //       const lastMaDocGia = latest[0].MaDocGia;
+  //       const match = lastMaDocGia.match(/\d+$/); // Lấy phần số ở cuối
+  //       if (match) {
+  //         nextNumber = parseInt(match[0]) + 1;
+  //       }
+  //     }
+
+  //     payload.MaDocGia = `DG${nextNumber.toString().padStart(3, "0")}`;
+  //   }
+
+  //   const docgia = this.extractDocgiaData(payload);
+  //   const result = await this.Docgia.findOneAndUpdate(
+  //     { MaDocGia: docgia.MaDocGia },
+  //     { $set: docgia },
+  //     { returnDocument: "after", upsert: true }
+  //   );
+  //   return result;
+  // }
+
+  // Phương thức lấy mã độc giả mới nhất
+  async getLatestDocGia() {
+    try {
+      const latest = await this.Docgia.find({}) // Lấy tất cả các bản ghi trong bảng Docgia
+        .sort({ MaDocGia: -1 }) // Sắp xếp giảm dần theo MaDocGia
+        .limit(1) // Lấy chỉ bản ghi đầu tiên
+        .toArray();
+
+      return latest[0]; // Trả về đối tượng độc giả mới nhất
+    } catch (error) {
+      console.error("Lỗi khi lấy độc giả mới nhất:", error);
+      throw new Error("Không thể lấy thông tin độc giả mới nhất");
+    }
+  }
+
   // Tạo mới độc giả
   async create(payload) {
     // Nếu không có MaDocGia, tự tạo mã mới
     if (!payload.MaDocGia) {
-      const latest = await this.Docgia.find({})
-        .sort({ MaDocGia: -1 }) // Sắp xếp giảm dần theo MaDocGia
-        .limit(1)
-        .toArray();
-
+      const latest = await this.getLatestDocGia(); // Gọi phương thức lấy mã độc giả mới nhất
       let nextNumber = 1;
 
-      if (latest.length > 0) {
-        const lastMaDocGia = latest[0].MaDocGia;
+      if (latest) {
+        const lastMaDocGia = latest.MaDocGia;
         const match = lastMaDocGia.match(/\d+$/); // Lấy phần số ở cuối
         if (match) {
           nextNumber = parseInt(match[0]) + 1;
         }
       }
 
-      payload.MaDocGia = `DG${nextNumber.toString().padStart(3, "0")}`;
+      payload.MaDocGia = `DG${nextNumber.toString().padStart(3, "0")}`; // Sinh mã độc giả
     }
 
     const docgia = this.extractDocgiaData(payload);

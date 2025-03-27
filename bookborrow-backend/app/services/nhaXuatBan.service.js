@@ -20,19 +20,31 @@ class NhaXuatBanService {
     return nhaXuatBan;
   }
 
+  // Phương thức lấy mã nhà xuất bản mới nhất
+  async getLatestNhaXuatBan() {
+    try {
+      const latest = await this.NhaXuatBan.find({})
+        .sort({ MaNXB: -1 })
+        .limit(1) // Lấy chỉ bản ghi đầu tiên
+        .toArray();
+
+      return latest[0];
+    } catch (error) {
+      console.error("Lỗi khi lấy nhà xuất bản mới nhất:", error);
+      throw new Error("Không thể lấy thông tin nhà xuất bản mới nhất");
+    }
+  }
+
   // Tạo mới nhà xuất bản
   async create(payload) {
     // Nếu không có MaNXB, tự tạo mã mới
     if (!payload.MaNXB) {
-      const latest = await this.NhaXuatBan.find({})
-        .sort({ MaNXB: -1 }) // Sắp xếp giảm dần theo MaNXB
-        .limit(1)
-        .toArray();
+      const latest = await this.getLatestNhaXuatBan();
 
       let nextNumber = 1;
 
-      if (latest.length > 0) {
-        const lastMaNXB = latest[0].MaNXB;
+      if (latest) {
+        const lastMaNXB = latest.MaNXB;
         const match = lastMaNXB.match(/\d+$/); // Lấy phần số ở cuối
         if (match) {
           nextNumber = parseInt(match[0]) + 1;

@@ -47,7 +47,10 @@ export default {
         async updateNhaxuatban(data) {
             try {
                 await NhaXuatBanService.update(this.nhaxuatban._id, data);
-                this.message = 'Nhà Xuất Bản được cập nhật thành công';
+                //this.message = 'Nhà xuất bản được thêm thành công';
+                confirm("Nhà xuất bản được cập nhật thành công")
+                // this.resetForm();
+                this.$router.push({ name: 'nhaxuatban' });
             } catch (error) {
                 console.log(error);
                 this.message = 'Lỗi khi cập nhật Nhà Xuất Bản';

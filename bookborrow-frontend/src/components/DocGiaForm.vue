@@ -47,8 +47,10 @@
             </button>
         </div>
 
-        <div v-if="deleteError" class="alert alert-danger mt-2">
-            {{ deleteError }}
+        <div class="d-flex justify-content-center">
+            <div v-if="deleteError" class="alert alert-danger mt-2">
+                {{ deleteError }}
+            </div>
         </div>
     </Form>
 </template>
@@ -57,6 +59,7 @@
 import * as yup from "yup";
 import { Form, Field, ErrorMessage } from "vee-validate";
 import axios from "axios"; // sử dụng axios để gọi API
+import DocGiaService from '@/services/docGia.service';
 
 export default {
     components: {

@@ -4,7 +4,7 @@
             <h4 class="fw-bold">THÊM MỚI SÁCH</h4>
         </div>
         <BookForm :book="book" @submit:book="createBook" />
-        <p>{{ message }}</p>
+        <p class="text-center">{{ message }}</p>
     </div>
 </template>
 
@@ -41,17 +41,6 @@ export default {
                 this.message = 'Đã có lỗi xảy ra. Vui lòng thử lại!';
             }
         },
-        resetForm() {
-            // Reset the form after successful submission
-            this.book = {
-                TenSach: "",
-                DonGia: null,
-                SoQuyen: null,
-                NamXuatBan: null,
-                MaNXB: "",
-                TacGia: "",
-            };
-        }
     },
     created() {
         this.message = '';

@@ -28,6 +28,8 @@ export default {
     },
     methods: {
         async createNhaXuatBan(data) {
+            // Xóa mã nhà xuất bản (MaNXB) trước khi gửi đi
+            data.MaNXB = '';
             try {
                 // Call NhaXuatBanService để tạo mới nhà xuất bản
                 await NhaXuatBanService.create(data);
