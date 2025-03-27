@@ -111,7 +111,18 @@ export default {
     methods: {
         async retrieveNXB() {
             try {
-                this.nhaxuatbans = await NhaXuatBanService.getAll();
+                // Lấy tất cả nhà xuất bản
+                const nhaxuatbans = await NhaXuatBanService.getAll();
+
+                // Duyệt qua từng nhà xuất bản và lấy số lượng sách của từng nhà xuất bản
+                for (let nxb of nhaxuatbans) {
+                    // Gọi API để lấy số lượng sách của nhà xuất bản
+                    const res = await NhaXuatBanService.getBooksCountByPublisher(nxb.MaNXB);
+                    nxb.booksCount = res.count || 0; // Thêm trường `booksCount` vào đối tượng nhà xuất bản
+                }
+
+                // Cập nhật danh sách nhà xuất bản
+                this.nhaxuatbans = nhaxuatbans;
             } catch (error) {
                 console.log(error);
             }

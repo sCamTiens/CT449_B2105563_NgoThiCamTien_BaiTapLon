@@ -14,10 +14,20 @@ export default {
 </script>
 
 <template>
-    <ul class="list-group">
-        <li class=list-group-item v-for="(nhanvien, index) in nhanviens" :key="nhanvien._id"
-            :class="{ active: index === activeIndex }" @click="updateActiveIndex(index)">
-            {{ nhanvien.HoTenNV }}
-        </li>
-    </ul>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="text-center"><strong>Họ tên nhân viên</strong></th>
+                    <th class="text-center"><strong>Chức vụ</strong></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(nhanvien, index) in nhanviens" :key="nhanvien._id" @click="updateActiveIndex(index)">
+                    <td>{{ nhanvien.HoTenNV }}</td>
+                    <td class="text-center">{{ nhanvien.ChucVu }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </template>

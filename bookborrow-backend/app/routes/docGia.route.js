@@ -3,6 +3,9 @@ const docGia = require("../controllers/docGia.controller");
 
 const router = express.Router();
 
+// Lấy số lượng sách mà độc giả đã mượn
+router.get("/borrowed-count/:MaDocGia", docGia.countBorrowedBooks);
+
 // Tìm độc giả theo tên
 router.get("/search", docGia.findByName);
 

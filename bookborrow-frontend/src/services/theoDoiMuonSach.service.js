@@ -79,15 +79,6 @@ class TheoDoiMuonSachService {
   async getReadersWithOverdueBooks() {
     return (await this.api.get(`/readers-with-overdue`)).data;
   }
-
-  // Thống kê
-  async countByPeriod(date, filterType) {
-    return (
-      await this.api.get(`/count-by-period`, {
-        params: { date, filterType },
-      })
-    ).data;
-  }
 }
 
 export default new TheoDoiMuonSachService(); // Export một instance duy nhất

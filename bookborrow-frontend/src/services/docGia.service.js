@@ -49,6 +49,11 @@ class DocGiaService {
   async checkBorrowedBooks(MaDocGia) {
     return (await this.api.get(`/check-borrowed/${MaDocGia}`)).data;
   }
+
+  // Lấy số lượng sách đã mượn của độc giả
+  async getBorrowedBooksCount(MaDocGia) {
+    return (await this.api.get(`/borrowed-count/${MaDocGia}`)).data;
+  }
 }
 
 export default new DocGiaService(); // Export một instance duy nhất của DocGiaService

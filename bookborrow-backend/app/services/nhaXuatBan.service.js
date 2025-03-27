@@ -3,6 +3,7 @@ const { ObjectId } = require("mongodb");
 class NhaXuatBanService {
   constructor(client) {
     this.NhaXuatBan = client.db().collection("NhaXuatBan");
+    this.Sach = client.db().collection("Sach");
   }
 
   // Định nghĩa phương thức xử lý dữ liệu nhà xuất bản (extract)
@@ -116,6 +117,17 @@ class NhaXuatBanService {
       return count > 0; // Nếu count > 0, MaNXB đã tồn tại
     } catch (error) {
       throw new Error("Lỗi khi kiểm tra MaNXB");
+    }
+  }
+
+  // Phương thức đếm số lượng sách của một nhà xuất bản
+  async getBooksCountByPublisher(MaNXB) {
+    try {
+      // Truy vấn và đếm số lượng sách có MaNXB tương ứng
+      const count = await this.Sach.countDocuments({ MaNXB });
+      return count;
+    } catch (error) {
+      throw new Error("Lỗi khi lấy số lượng sách của nhà xuất bản");
     }
   }
 }

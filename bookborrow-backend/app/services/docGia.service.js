@@ -115,6 +115,22 @@ class DocgiaService {
     const borrowedBooks = await this.getBorrowedBooks(MaDocGia);
     return borrowedBooks.length > 0; // Trả về true nếu đã mượn sách
   }
+
+  // Đếm số lượng sách mà độc giả đã mượn
+  async countBorrowedBooks(MaDocGia) {
+    try {
+      // Tìm tất cả các bản ghi mượn sách của độc giả với MaDocGia
+      const borrowedBooks = await this.TheoDoiMuonSach.find({
+        MaDocGia,
+      }).toArray();
+
+      // Trả về số lượng sách đã mượn
+      return borrowedBooks.length;
+    } catch (error) {
+      console.error("Lỗi khi đếm sách mượn:", error);
+      throw new Error("Lỗi khi đếm sách mượn của độc giả");
+    }
+  }
 }
 
 module.exports = DocgiaService;

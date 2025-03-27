@@ -111,7 +111,20 @@ export default {
     methods: {
         async retrieveDocGia() {
             try {
+                // Lấy danh sách độc giả
                 this.docgias = await DocGiaService.getAll();
+
+                // Lặp qua mỗi độc giả và đếm số lượng sách mượn
+                for (let docgia of this.docgias) {
+                    try {
+                        // Gọi API để lấy số lượng sách đã mượn
+                        const res = await DocGiaService.getBorrowedBooksCount(docgia.MaDocGia);
+                        docgia.soLuongMuon = res.count || 0; // Lưu số lượng sách mượn vào từng đối tượng docgia
+                    } catch (error) {
+                        console.log("Lỗi khi lấy số lượng sách mượn cho độc giả:", docgia.MaDocGia, error);
+                        docgia.soLuongMuon = 0; // Nếu gặp lỗi, mặc định là 0
+                    }
+                }
             } catch (error) {
                 console.log(error);
             }

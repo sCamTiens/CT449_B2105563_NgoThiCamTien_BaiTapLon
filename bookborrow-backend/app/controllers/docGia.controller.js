@@ -146,3 +146,15 @@ exports.checkBorrowedBooks = async (req, res, next) => {
     return next(new ApiError(500, "Error checking borrowed books"));
   }
 };
+
+// Đếm số lượng sách mà độc giả đã mượn
+exports.countBorrowedBooks = async (req, res, next) => {
+  const { MaDocGia } = req.params;
+  try {
+    const docgiaService = new DocgiaService(MongoDB.client);
+    const count = await docgiaService.countBorrowedBooks(MaDocGia);
+    res.json({ count });
+  } catch (error) {
+    return next(new ApiError(500, "Error counting borrowed books for reader"));
+  }
+};

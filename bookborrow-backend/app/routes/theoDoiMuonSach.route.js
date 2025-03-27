@@ -3,8 +3,6 @@ const theoDoiMuonSach = require("../controllers/theoDoiMuonSach.controller");
 
 const router = express.Router();
 
-router.get("/count-by-period", theoDoiMuonSach.countByPeriod);
-
 // Kiểm tra bản ghi quá hạn
 router.get("/check-overdue/:MaDocGia/:MaSach", theoDoiMuonSach.checkOverdue);
 

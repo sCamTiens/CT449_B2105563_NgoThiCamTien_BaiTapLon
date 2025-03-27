@@ -156,15 +156,27 @@ exports.getPublisherInfo = async (req, res, next) => {
   }
 };
 
-// Phương thức kiểm tra MaNXB đã tồn tại hay chưa
-exports.checkMaNXBExists = async (req, res, next) => {
-  const { MaNXB } = req.params; // Lấy MaNXB từ tham số route
+// // Phương thức kiểm tra MaNXB đã tồn tại hay chưa
+// exports.checkMaNXBExists = async (req, res, next) => {
+//   const { MaNXB } = req.params; // Lấy MaNXB từ tham số route
+//   try {
+//     // Gọi service để kiểm tra MaNXB có tồn tại không
+//     const exists = await NhaXuatBanService.checkMaNXBExists(MaNXB);
+//     res.json({ exists }); // Trả về true hoặc false
+//   } catch (error) {
+//     console.error("Error checking MaNXB:", error);
+//     return next(new ApiError(500, "Lỗi khi kiểm tra mã nhà xuất bản"));
+//   }
+// };
+
+// Lấy số lượng sách của nhà xuất bản
+exports.getBooksCountByPublisher = async (req, res, next) => {
+  const { MaNXB } = req.params; // Lấy MaNXB từ URL
   try {
-    // Gọi service để kiểm tra MaNXB có tồn tại không
-    const exists = await NhaXuatBanService.checkMaNXBExists(MaNXB);
-    res.json({ exists }); // Trả về true hoặc false
+    const nhaXuatBanService = new NhaXuatBanService(MongoDB.client);
+    const count = await nhaXuatBanService.getBooksCountByPublisher(MaNXB);
+    res.json({ MaNXB, count }); // Trả về số lượng sách của nhà xuất bản
   } catch (error) {
-    console.error("Error checking MaNXB:", error);
-    return next(new ApiError(500, "Lỗi khi kiểm tra mã nhà xuất bản"));
+    return next(new ApiError(500, "Error retrieving book count by publisher"));
   }
 };

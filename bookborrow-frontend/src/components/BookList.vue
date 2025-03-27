@@ -14,14 +14,23 @@ export default {
 </script>
 
 <template>
-    <ul class="list-group">
-        <li v-for="(book, index) in books" :key="book._id" class="list-group-item"
-            :class="{ active: index === activeIndex }" @click="updateActiveIndex(index)">
-            {{ book.TenSach }}
-        </li>
-    </ul>
+    <div class="container mt-3">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="text-center"><strong>Tên sách</strong></th>
+                    <th class="text-center"><strong>Số lượng còn lại</strong></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(book, index) in books" :key="book._id" @click="updateActiveIndex(index)">
+                    <td>{{ book.TenSach }}</td>
+                    <td class="text-center">{{ book.SoQuyen }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </template>
-
 
 <style scoped>
 .list-group-item {

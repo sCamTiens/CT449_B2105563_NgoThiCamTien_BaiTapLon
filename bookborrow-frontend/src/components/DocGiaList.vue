@@ -14,10 +14,20 @@ export default {
 </script>
 
 <template>
-    <ul class="list-group">
-        <li class=list-group-item v-for="(docgia, index) in docgias" :key="docgia._id"
-            :class="{ active: index === activeIndex }" @click="updateActiveIndex(index)">
-            {{ docgia.HoLot }} {{ docgia.Ten }}
-        </li>
-    </ul>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="text-center"><strong>Họ tên độc giả</strong></th>
+                    <th class="text-center"><strong>Số lượt mượn</strong></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(docgia, index) in docgias" :key="docgia._id" @click="updateActiveIndex(index)">
+                    <td>{{ docgia.HoLot }} {{ docgia.Ten }}</td>
+                    <td class="text-center">{{ docgia.soLuongMuon }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </template>

@@ -45,10 +45,10 @@ class NhaXuatBanService {
     return (await this.api.get(`/info/${MaNXB}`)).data;
   }
 
-  //Kiểm tra xem MaNXB có tồn tại trong cơ sở dữ liệu không
-  // async checkMaNXBExists(MaNXB) {
-  //   return (await this.api.get(`/checkMaNXB/${MaNXB}`)).data;
-  // }
+  // Lấy số lượng sách của nhà xuất bản
+  async getBooksCountByPublisher(MaNXB) {
+    return (await this.api.get(`/books/count/${MaNXB}`)).data;
+  }
 }
 
 export default new NhaXuatBanService(); // Export một instance duy nhất của NhaXuatBanService
