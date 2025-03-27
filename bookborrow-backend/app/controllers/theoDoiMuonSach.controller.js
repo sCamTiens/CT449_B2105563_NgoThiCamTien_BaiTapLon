@@ -10,7 +10,7 @@ exports.create = async (req, res, next) => {
   try {
     const theoDoiMuonSachService = new TheoDoiMuonSachService(MongoDB.client);
     const document = await theoDoiMuonSachService.create(req.body);
-    res.json(document);
+    res.json(document); // Trả về bản ghi đã tạo
   } catch (error) {
     return next(
       new ApiError(
@@ -26,15 +26,11 @@ exports.findAll = async (req, res, next) => {
   let documents = [];
   try {
     const theoDoiMuonSachService = new TheoDoiMuonSachService(MongoDB.client);
-    const { MaDocGia, MaSach } = req.query;
-    if (MaDocGia && MaSach) {
-      documents = await theoDoiMuonSachService.findByDocGiaAndSach(
-        MaDocGia,
-        MaSach
-      );
-    } else {
-      documents = await theoDoiMuonSachService.find({});
-    }
+
+    // Lấy tất cả các bản ghi theo dõi mượn sách qua phương thức getAll
+    documents = await theoDoiMuonSachService.getAll();
+
+    // Trả về dữ liệu đã được làm giàu thông tin sách và độc giả
     res.json(documents);
   } catch (error) {
     return next(
@@ -173,6 +169,21 @@ exports.getBookDetails = async (req, res, next) => {
   }
 };
 
+// Lấy thông tin chi tiết độc giả theo MaDocGia
+exports.getReaderDetails = async (req, res, next) => {
+  try {
+    const { MaDocGia } = req.params;
+    const service = new TheoDoiMuonSachService(MongoDB.client);
+    const docgia = await service.getReaderDetails(MaDocGia);
+    if (!docgia) {
+      return next(new ApiError(404, "Reader not found"));
+    }
+    res.json(docgia);
+  } catch (error) {
+    return next(new ApiError(500, "Error retrieving reader details"));
+  }
+};
+
 // Kiểm tra sách đã trả hay chưa
 exports.checkReturnStatus = async (req, res, next) => {
   try {
@@ -190,11 +201,139 @@ exports.checkBookInBorrowList = async (req, res, next) => {
   try {
     const { MaSach } = req.params;
     const theoDoiMuonSachService = new TheoDoiMuonSachService(MongoDB.client);
-    const exists = await theoDoiMuonSachService.checkBookExistsInBorrowList(
-      MaSach
-    );
+    const exists =
+      await theoDoiMuonSachService.checkBookExistsInBorrowList(MaSach);
     res.json({ exists });
   } catch (error) {
     return next(new ApiError(500, "Lỗi khi kiểm tra sách trong bản ghi mượn"));
   }
 };
+
+// Kiểm tra xem bản ghi mượn sách có quá hạn hay không
+exports.checkOverdue = async (req, res, next) => {
+  const { MaDocGia, MaSach } = req.params;
+  try {
+    const service = new TheoDoiMuonSachService(MongoDB.client);
+    const isOverdue = await service.checkOverdue(MaDocGia, MaSach); // Sử dụng hàm kiểm tra quá hạn từ service
+    res.json({ isOverdue });
+  } catch (error) {
+    return next(new ApiError(500, "Lỗi khi kiểm tra bản ghi quá hạn"));
+  }
+};
+
+// Đếm số lượng bản ghi mượn sách đã quá hạn
+exports.countOverdue = async (req, res, next) => {
+  try {
+    const service = new TheoDoiMuonSachService(MongoDB.client);
+    const overdueCount = await service.countOverdue(); // Sử dụng hàm đếm số lượng quá hạn từ service
+    res.json({ overdueCount });
+  } catch (error) {
+    return next(new ApiError(500, "Lỗi khi đếm số lượng bản ghi quá hạn"));
+  }
+};
+
+// Lấy danh sách độc giả có bản ghi mượn sách quá hạn
+exports.getReadersWithOverdueBooks = async (req, res, next) => {
+  try {
+    const service = new TheoDoiMuonSachService(MongoDB.client);
+    const readers = await service.getReadersWithOverdueBooks(); // Sử dụng hàm lấy danh sách độc giả quá hạn từ service
+    res.json(readers);
+  } catch (error) {
+    return next(
+      new ApiError(500, "Lỗi khi lấy danh sách độc giả có bản ghi quá hạn")
+    );
+  }
+};
+
+// Thống kê mượn sách theo khoảng thời gian
+exports.countByPeriod = async (req, res, next) => {
+  const { filterType, date } = req.query; // Lấy dữ liệu từ query string
+  let startOfPeriod;
+  let endOfPeriod;
+
+  try {
+    if (!date || !filterType) {
+      return next(new ApiError(400, "Missing required query parameters"));
+    }
+
+    // Chuyển đổi string ngày thành đối tượng Date
+    const selectedDate = new Date(date);
+
+    // Chọn khoảng thời gian theo kiểu thống kê
+    switch (filterType) {
+      case "day":
+        startOfPeriod = new Date(selectedDate.setHours(0, 0, 0, 0)); // Ngày bắt đầu
+        endOfPeriod = new Date(selectedDate.setHours(23, 59, 59, 999)); // Ngày kết thúc
+        break;
+
+      case "week":
+        startOfPeriod = getStartOfWeek(new Date(selectedDate)); // Tính ngày bắt đầu tuần
+        endOfPeriod = getEndOfWeek(new Date(selectedDate)); // Tính ngày kết thúc tuần
+        break;
+
+      case "month":
+        startOfPeriod = new Date(
+          selectedDate.getFullYear(),
+          selectedDate.getMonth(),
+          1
+        ); // Ngày đầu tháng
+        endOfPeriod = new Date(
+          selectedDate.getFullYear(),
+          selectedDate.getMonth() + 1,
+          0
+        ); // Ngày cuối tháng
+        break;
+
+      case "year":
+        startOfPeriod = new Date(selectedDate.getFullYear(), 0, 1); // Ngày đầu năm
+        endOfPeriod = new Date(selectedDate.getFullYear(), 11, 31); // Ngày cuối năm
+        break;
+
+      default:
+        return next(new ApiError(400, "Invalid filter type"));
+    }
+
+    const theoDoiMuonSachService = new TheoDoiMuonSachService(MongoDB.client);
+
+    // Gọi đúng phương thức đếm từ service theo loại thống kê
+    let count;
+    switch (filterType) {
+      case "day":
+        count = await theoDoiMuonSachService.countByDay(startOfPeriod);
+        break;
+
+      case "week":
+        count = await theoDoiMuonSachService.countByWeek(startOfPeriod);
+        break;
+
+      case "month":
+        count = await theoDoiMuonSachService.countByMonth(startOfPeriod);
+        break;
+
+      case "year":
+        count = await theoDoiMuonSachService.countByYear(startOfPeriod);
+        break;
+    }
+
+    res.json({ count }); // Trả về kết quả thống kê
+  } catch (error) {
+    console.error("Error:", error);
+    return next(
+      new ApiError(500, "Error processing request for counting records")
+    );
+  }
+};
+
+// Hàm tính ngày bắt đầu của tuần (Thứ 2)
+function getStartOfWeek(date) {
+  const day = date.getDay(),
+    diff = date.getDate() - day + (day === 0 ? -6 : 1); // Thứ 2 là ngày bắt đầu tuần
+  return new Date(date.setDate(diff));
+}
+
+// Hàm tính ngày kết thúc của tuần (Chủ nhật)
+function getEndOfWeek(date) {
+  const day = date.getDay(),
+    diff = date.getDate() + (day === 0 ? 0 : 7 - day); // Chủ nhật là ngày kết thúc tuần
+  return new Date(date.setDate(diff));
+}

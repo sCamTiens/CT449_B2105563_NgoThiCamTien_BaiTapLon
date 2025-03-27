@@ -27,13 +27,6 @@ export default {
     methods: {
         async createNhaXuatBan(data) {
             try {
-                //Kiểm tra xem MaNXB đã tồn tại chưa
-                const exists = await NhaXuatBanService.checkMaNXBExists(data.MaNXB);
-                if (exists) {
-                    this.message = 'Mã nhà xuất bản đã tồn tại. Vui lòng chọn mã khác.';
-                    return; // Dừng lại nếu MaNXB đã tồn tại
-                }
-
                 // Call NhaXuatBanService để tạo mới nhà xuất bản
                 await NhaXuatBanService.create(data);
                 //this.message = 'Nhà xuất bản được thêm thành công';

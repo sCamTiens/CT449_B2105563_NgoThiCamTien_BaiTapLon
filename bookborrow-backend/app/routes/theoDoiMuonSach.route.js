@@ -3,6 +3,17 @@ const theoDoiMuonSach = require("../controllers/theoDoiMuonSach.controller");
 
 const router = express.Router();
 
+router.get("/count-by-period", theoDoiMuonSach.countByPeriod);
+
+// Kiểm tra bản ghi quá hạn
+router.get("/check-overdue/:MaDocGia/:MaSach", theoDoiMuonSach.checkOverdue);
+
+// Đếm số lượng bản ghi quá hạn
+router.get("/count-overdue", theoDoiMuonSach.countOverdue);
+
+// Lấy danh sách độc giả có bản ghi quá hạn
+router.get("/readers-with-overdue", theoDoiMuonSach.getReadersWithOverdueBooks);
+
 // Kiểm tra xem sách đã có trong danh sách mượn chưa
 router.get("/check-book/:MaSach", theoDoiMuonSach.checkBookInBorrowList);
 
@@ -14,6 +25,9 @@ router.get("/employee/:MSNV", theoDoiMuonSach.getBooksBorrowedByEmployee);
 
 // Lấy chi tiết sách từ MaSach
 router.get("/book-detail/:MaSach", theoDoiMuonSach.getBookDetails);
+
+// Lấy chi tiết độc giả theo MaDocGia
+router.get("/docgia-detail/:MaDocGia", theoDoiMuonSach.getReaderDetails);
 
 // Kiểm tra sách đã trả hay chưa
 router.get("/check-return/:MaSach", theoDoiMuonSach.checkReturnStatus);

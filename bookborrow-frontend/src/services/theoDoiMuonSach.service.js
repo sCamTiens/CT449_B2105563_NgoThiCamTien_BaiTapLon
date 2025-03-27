@@ -41,13 +41,18 @@ class TheoDoiMuonSachService {
   }
 
   // Lấy sách mà một nhân viên đã theo dõi mượn
-  async getBooksByEmployee(MSNV) {
-    return (await this.api.get(`/employee/${MSNV}`)).data;
-  }
+  // async getBooksByEmployee(MSNV) {
+  //   return (await this.api.get(`/employee/${MSNV}`)).data;
+  // }
 
   // Lấy chi tiết sách theo MaSach
   async getBookDetails(MaSach) {
     return (await this.api.get(`/book-detail/${MaSach}`)).data;
+  }
+
+  // Lấy chi tiết độc giả theo MaDocGia
+  async getReaderDetails(MaDocGia) {
+    return (await this.api.get(`/docgia-detail/${MaDocGia}`)).data;
   }
 
   // Kiểm tra tình trạng trả sách (true nếu đã trả)
@@ -58,6 +63,30 @@ class TheoDoiMuonSachService {
   // Kiểm tra sách đã có trong danh sách mượn chưa
   async checkBookInBorrowList(MaSach) {
     return (await this.api.get(`/check-book/${MaSach}`)).data;
+  }
+
+  // Kiểm tra nếu một bản ghi mượn sách quá hạn
+  async checkOverdue(MaDocGia, MaSach) {
+    return (await this.api.get(`/check-overdue/${MaDocGia}/${MaSach}`)).data;
+  }
+
+  // Đếm số lượng bản ghi mượn sách quá hạn
+  async countOverdue() {
+    return (await this.api.get(`/count-overdue`)).data;
+  }
+
+  // Lấy danh sách độc giả có sách mượn quá hạn
+  async getReadersWithOverdueBooks() {
+    return (await this.api.get(`/readers-with-overdue`)).data;
+  }
+
+  // Thống kê
+  async countByPeriod(date, filterType) {
+    return (
+      await this.api.get(`/count-by-period`, {
+        params: { date, filterType },
+      })
+    ).data;
   }
 }
 

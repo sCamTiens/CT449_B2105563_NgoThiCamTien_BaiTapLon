@@ -91,14 +91,14 @@ export default {
     },
     computed: {
         muonsachStrings() {
-            return this.muonsachs.map((item) => {
-                const { MaMuon, MaSach, MaDocGia, NgayMuon, NgayTra } = item;
-                return [MaMuon, MaSach, MaDocGia, NgayMuon, NgayTra].join('');
+            return this.muonsachs.map((muonsach) => {
+                const { MaSach, MaDocGia, NgayMuon, NgayTra, TrangThai } = muonsach;
+                return [MaSach, MaDocGia, NgayMuon, NgayTra, TrangThai].join('');
             });
         },
         filteredMuonSachs() {
             if (!this.searchText) return this.muonsachs;
-            return this.muonsachs.filter((_item, index) =>
+            return this.muonsachs.filter((_muonsach, index) =>
                 this.muonsachStrings[index].toLowerCase().includes(this.searchText.toLowerCase())
             );
         },
@@ -113,9 +113,27 @@ export default {
     methods: {
         async retrieveMuonSach() {
             try {
-                this.muonsachs = await MuonSachService.getAll();
+                // Sử dụng dịch vụ API để lấy tất cả bản ghi mượn sách
+                const muonSachs = await MuonSachService.getAll();
+                // Lặp qua từng bản ghi để lấy tên sách và tên độc giả
+                for (let muonsach of muonSachs) {
+                    // console.log("Muon Sach Item:", muonsach);
+                    const book = await MuonSachService.getBookDetails(muonsach.MaSach); // Lấy chi tiết sách
+                    const docgia = await MuonSachService.getReaderDetails(muonsach.MaDocGia);
+                    muonsach.SoLuong = muonsach.SoLuong || 'Chưa xác định';
+
+                    // Gán tên sách và tên độc giả vào mỗi bản ghi
+                    muonsach.TenSach = book ? book.TenSach : "Không tìm thấy sách";
+                    muonsach.TenDocGia = docgia ? docgia.HoLot + " " + docgia.Ten : "Không tìm thấy độc giả";
+                }
+
+                this.muonsachs = muonSachs; // Cập nhật lại danh sách mượn sách
             } catch (error) {
-                console.log(error);
+                if (error.response) {
+                    console.error("Lỗi từ API:", error.response.data); // In ra dữ liệu lỗi từ API
+                } else {
+                    console.error("Lỗi không phải từ API:", error.message); // In ra lỗi khác
+                }
             }
         },
         refreshList() {

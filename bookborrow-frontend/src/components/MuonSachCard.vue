@@ -12,5 +12,6 @@ export default {
         <div><strong>Mã sách:</strong> {{ data.MaSach }}</div>
         <div><strong>Ngày mượn:</strong> {{ data.NgayMuon }}</div>
         <div><strong>Ngày trả:</strong> {{ data.NgayTra || 'Chưa trả' }}</div>
+        <div><strong>Số lượng mượn:</strong> {{ data.SoLuong || 'Chưa xác định' }}</div>
     </div>
 </template>

@@ -56,7 +56,7 @@ export default {
 
 <style>
 .sidebar {
-    background: linear-gradient(135deg, #74ebd5, #acb6e5);
+    background: linear-gradient(135deg, #efc9c9, #fbe8ee);
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 5px 8px rgba(0, 0, 0, 0.1);
