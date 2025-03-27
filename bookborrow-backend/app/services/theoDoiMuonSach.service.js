@@ -72,20 +72,50 @@ class TheoDoiMuonSachService {
   }
 
   // Cập nhật trạng thái trả sách và số lượng sách trong kho
-  async returnBook(id, NgayTra) {
-    // 1. Cập nhật ngày trả trong bảng TheoDoiMuonSach và chuyển trạng thái thành "Đã trả"
-    const result = await this.update(id, { NgayTra, TrangThai: "Đã trả" });
+  async returnBook(id) {
+    try {
+      // Lấy ngày trả sách là ngày hiện tại
+      const today = new Date().toISOString().slice(0, 10);
+      console.log("Ngày trả sách:", today); // Log ngày trả sách
+      console.log("id:", id);
 
-    if (result.value) {
-      const { MaSach, SoLuong } = result.value; // Lấy mã sách và số lượng mượn
+      console.log("Dữ liệu gửi đi:", { id: id, NgayTra: today }); // Log dữ liệu gửi đến backend
 
-      // 2. Cộng lại số lượng sách trong kho khi trả sách
-      await this.Sach.updateOne({ MaSach }, { $inc: { SoQuyen: SoLuong } });
+      // Tìm bản ghi theo dõi mượn sách trong cơ sở dữ liệu
+      const muonsach = await this.TheoDoiMuonSach.findOne({
+        _id: new ObjectId(id), // Lấy bản ghi dựa trên id
+      });
 
-      return result;
+      // Kiểm tra nếu không tìm thấy bản ghi
+      if (!muonsach) {
+        throw new Error("Không tìm thấy bản ghi mượn sách");
+      }
+
+      // Cập nhật trạng thái sách và ngày trả sách
+      muonsach.TrangThai = "Đã trả"; // Cập nhật trạng thái là "Đã trả"
+      muonsach.NgayTra = today; // Cập nhật ngày trả sách
+
+      // Cập nhật thông tin vào cơ sở dữ liệu
+      await this.TheoDoiMuonSach.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { TrangThai: "Đã trả", NgayTra: today } }
+      );
+
+      // Cập nhật số lượng sách trong kho
+      const book = await this.getBookDetails(muonsach.MaSach); // Sử dụng phương thức của service để lấy thông tin sách
+      if (book) {
+        await this.updateBookQuantity(
+          muonsach.MaSach,
+          book.SoQuyen + muonsach.SoLuong
+        );
+      }
+
+      console.log("Cập nhật trạng thái sách thành công:", muonsach);
+      return muonsach; // Trả về kết quả cập nhật
+    } catch (error) {
+      console.error("Lỗi khi trả sách:", error); // Log lỗi khi gặp sự cố
+      throw new Error("Có lỗi xảy ra khi trả sách.");
     }
-
-    return null;
   }
 
   // Cập nhật số lượng sách trong kho

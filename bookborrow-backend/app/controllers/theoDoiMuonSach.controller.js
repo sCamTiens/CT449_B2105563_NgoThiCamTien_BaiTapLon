@@ -248,16 +248,19 @@ exports.getReadersWithOverdueBooks = async (req, res, next) => {
 // Trả sách (Update the return status and book quantity)
 exports.returnBook = async (req, res, next) => {
   const { id } = req.params;
-  const { NgayTra } = req.body; // Đảm bảo ngày trả sách được gửi qua body
+
   try {
     const theoDoiMuonSachService = new TheoDoiMuonSachService(MongoDB.client);
-    const result = await theoDoiMuonSachService.returnBook(id, NgayTra);
+    const result = await theoDoiMuonSachService.returnBook(id);
 
     if (!result) {
+      console.log("Không tìm thấy bản ghi mượn sách"); // Log lỗi khi không tìm thấy bản ghi
       return next(new ApiError(404, "Không tìm thấy bản ghi mượn sách"));
     }
+    console.log("Trả sách thành công:", result); // Log kết quả khi trả sách thành công
     res.json(result);
   } catch (error) {
+    console.log("Lỗi khi trả sách:", error); // Log lỗi khi có exception
     return next(new ApiError(500, "Lỗi khi trả sách"));
   }
 };

@@ -19,7 +19,7 @@
                     <td class="text-center">{{ muonsach.TrangThai }}</td>
                     <td class="text-center">
                         <!-- Nút trả sách nếu sách đang mượn -->
-                        <button v-if="muonsach.TrangThai === 'Đang mượn'" @click.stop="returnBook(muonsach)"
+                        <button v-if="muonsach.TrangThai === 'Đang mượn'" @click.stop.prevent="returnBook(muonsach)"
                             class="btn btn-success">Trả sách</button>
                         <!-- Hiển thị trạng thái "Đã trả" nếu đã trả -->
                         <span v-if="muonsach.TrangThai === 'Đã trả'" class="text-success">Đã trả</span>
@@ -33,6 +33,7 @@
 
 <script>
 import TheoDoiMuonSachService from "@/services/theoDoiMuonSach.service";
+import axios from "axios";
 
 export default {
     props: {
@@ -59,25 +60,20 @@ export default {
                 // Lấy ngày trả sách là ngày hiện tại
                 const today = new Date().toISOString().slice(0, 10);
 
-                // Gọi phương thức returnBook từ service
-                await TheoDoiMuonSachService.returnBook(muonsach._id, today);
-
-                // Cập nhật trạng thái sách
-                muonsach.TrangThai = "Đã trả";
-                muonsach.NgayTra = today;
-
-                // Cập nhật số lượng sách trong kho
-                const book = await TheoDoiMuonSachService.getBookDetails(muonsach.MaSach);
-                if (book) {
-                    await TheoDoiMuonSachService.updateBookQuantity(muonsach.MaSach, book.SoQuyen + muonsach.SoLuong);
+                // Kiểm tra muonsach._id
+                if (!muonsach._id) {
+                    console.log("ID của sách không có hoặc bị undefined");
                 }
 
-                alert("Sách đã được trả thành công!");
+                // Gọi API trả sách
+                await axios.put(`/api/muonsachs/return/${muonsach._id}`);
+
             } catch (error) {
-                console.error("Lỗi khi trả sách:", error);
+                console.error("Lỗi khi trả sách:", error); // Log lỗi khi gặp sự cố
                 alert("Có lỗi xảy ra khi trả sách.");
             }
-        },
+        }
+
     }
 };
 </script>

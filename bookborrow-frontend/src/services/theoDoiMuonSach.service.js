@@ -80,9 +80,10 @@ class TheoDoiMuonSachService {
     return (await this.api.get(`/readers-with-overdue`)).data;
   }
 
-  // Thêm phương thức trả sách
-  async returnBook(id, NgayTra) {
-    return (await this.api.put(`/return/${id}`, { NgayTra })).data;
+  // Cập nhật trạng thái trả sách
+  async returnBook(id) {
+    // Gọi PUT request đến API trả sách
+    return (await this.api.put(`/return/${id}`)).data;
   }
 }
 
